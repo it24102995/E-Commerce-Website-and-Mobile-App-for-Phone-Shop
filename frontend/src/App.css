@@ -1,0 +1,53 @@
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 50px;
+    background: var(--white);
+    border-bottom: 1px solid var(--silver);
+    position: sticky; top: 0; z-index: 1000;
+}
+
+.logo { font-weight: bold; font-size: 24px; color: var(--sapphire); letter-spacing: 2px; }
+
+
+.main-layout {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.sidebar {
+    width: 250px;
+    padding-right: 40px;
+    border-right: 1px solid var(--silver);
+}
+
+
+.luxury-card {
+    background: var(--white);
+    border: 1px solid var(--silver);
+    padding: 20px;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.luxury-card:hover {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-color: var(--golden);
+}
+
+.gold-btn {
+    background: var(--sapphire);
+    color: var(--white);
+    border: 1px solid var(--sapphire);
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.gold-btn:hover {
+    background: var(--golden);
+    border-color: var(--golden);
+}
