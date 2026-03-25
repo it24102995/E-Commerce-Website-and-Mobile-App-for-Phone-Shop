@@ -1,0 +1,70 @@
+.product-page { padding: 60px 8%; }
+
+.shop-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.shop-header h2 {
+    font-size: 2.5rem;
+    color: var(--sapphire);
+    margin-bottom: 5px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+}
+
+.luxury-card {
+    background: var(--diamond);
+    border: 1px solid var(--silver);
+    padding: 30px;
+    text-align: center;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.luxury-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow);
+    border-color: var(--golden);
+}
+
+.img-container {
+    background: var(--silver);
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.luxury-card img { width: 100%; border-radius: 4px; }
+
+.price {
+    font-size: 1.2rem;
+    color: var(--golden);
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.stock-tag {
+    display: block;
+    font-size: 0.8rem;
+    color: #2ecc71;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.gold-btn {
+    width: 100%;
+    background: var(--sapphire);
+    color: white;
+    border: none;
+    padding: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.gold-btn:hover {
+    background: var(--golden);
+}
