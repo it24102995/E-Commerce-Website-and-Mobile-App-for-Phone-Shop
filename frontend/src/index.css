@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
+
+:root {
+    --diamond: rgb(255, 255, 255);
+    --silver: #EFEFEF;
+    --icy-lake: #DFE6E6;
+    --golden: #D4A052;
+    --sapphire: #234F60;
+    --black-tie: #000000;
+
+    /* Functional mappings */
+    --primary-dark: var(--sapphire);
+    --secondary-dark: var(--icy-lake);
+    --accent: var(--golden);
+    --light-bg: var(--diamond);
+    --shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--black-tie);
+}
+
+h1, h2, h3, .logo {
+    font-family: 'Playfair Display', serif;
+}
+
+button {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
