@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
 
+/* COLOR THEME */
 :root {
-    --diamond: rgb(255, 255, 255);
-    --silver: #EFEFEF;
-    --icy-lake: #DFE6E6;
-    --golden: #D4A052;
-    --sapphire: #234F60;
-    --black-tie: #000000;
+    --diamond: #ffffff;
+    --silver: #f4f7fb;
+    --icy-lake: #e9f1fb;
+    --golden: #3b82f6;   /* blue accent */
+    --sapphire: #0f2747; /* dark blue */
+    --black-tie: #111827;
 
-    /* Functional mappings */
     --primary-dark: var(--sapphire);
     --secondary-dark: var(--icy-lake);
     --accent: var(--golden);
@@ -16,18 +16,47 @@
     --shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
-body {
+/* RESET */
+* {
     margin: 0;
-    font-family: 'Inter', sans-serif;
-    background-color: var(--light-bg);
-    color: var(--black-tie);
+    padding: 0;
+    box-sizing: border-box;
 }
 
+/* BODY */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--silver);
+    color: var(--black-tie);
+    line-height: 1.6;
+}
+
+/* HEADINGS */
 h1, h2, h3, .logo {
     font-family: 'Playfair Display', serif;
 }
 
+/* LINKS */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* BUTTONS */
 button {
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+/* MAIN APP CONTAINER */
+.app-container {
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    padding: 20px 8%;
+}
+
+/* SMOOTH UI */
+html {
+    scroll-behavior: smooth;
 }
