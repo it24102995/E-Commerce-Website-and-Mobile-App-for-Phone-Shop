@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Sidebar from './components/Sidebar';
 import Product from './pages/Product';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -30,27 +29,30 @@ function App() {
     return (
         <Router>
             <Navbar cartCount={cart.length} />
-            <div style={{ display: 'flex' }}>
-                <Sidebar />
-                <main style={{ flex: 1 }}>
-                    <Routes>
-                        <Route path="/" element={<Product fetchCart={fetchCart} />} />
-                        <Route path="/cart" element={<Cart cartItems={cart} fetchCart={fetchCart} />} />
-                        <Route
-                            path="/checkout"
-                            element={
-                                <Checkout
-                                    cartItems={cart}
-                                    setPaymentInfo={setPaymentInfo}
-                                />
-                            }
-                        />
-                        <Route
-                            path="/invoice"
-                            element={<Invoice cartItems={cart} paymentInfo={paymentInfo} />}
-                        />
-                    </Routes>
-                </main>
+
+            <div className="app-container">
+                <Routes>
+                    <Route path="/" element={<Product fetchCart={fetchCart} />} />
+                    <Route path="/cart" element={<Cart cartItems={cart} fetchCart={fetchCart} />} />
+                    <Route
+                        path="/checkout"
+                        element={
+                            <Checkout
+                                cartItems={cart}
+                                setPaymentInfo={setPaymentInfo}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/invoice"
+                        element={
+                            <Invoice
+                                cartItems={cart}
+                                paymentInfo={paymentInfo}
+                            />
+                        }
+                    />
+                </Routes>
             </div>
         </Router>
     );
