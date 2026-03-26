@@ -2,48 +2,78 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 8%;
-    background: var(--diamond);
-    border-bottom: 1px solid var(--silver);
+    padding: 14px 8%;
+    background: linear-gradient(90deg, #0d6efd, #1d7df2);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--sapphire);
-    letter-spacing: 2px;
+/* LEFT SIDE */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     cursor: pointer;
 }
 
+.navbar-logo {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: white;
+    padding: 2px;
+}
+
+/* TEXT */
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-main {
+    font-size: 18px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.brand-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.8);
+}
+
+/* RIGHT SIDE */
 .nav-links {
     display: flex;
-    gap: 30px;
+    gap: 25px;
     align-items: center;
     font-weight: 600;
 }
 
+/* LINKS */
 .nav-links span {
     cursor: pointer;
-    color: var(--black-tie);
+    color: white;
+    transition: 0.3s;
 }
 
 .nav-links span:hover {
-    color: var(--golden);
+    color: #dbeafe;
 }
 
+/* CART */
 .cart-icon-wrapper {
-    background: var(--sapphire);
-    color: white;
-    padding: 8px 18px;
+    background: white;
+    color: #0d6efd;
+    padding: 8px 16px;
     border-radius: 50px;
-    display: flex;
-    gap: 8px;
+    font-weight: 700;
     cursor: pointer;
+    transition: 0.3s;
 }
 
 .cart-icon-wrapper:hover {
-    background: var(--golden);
+    background: #e0edff;
 }
