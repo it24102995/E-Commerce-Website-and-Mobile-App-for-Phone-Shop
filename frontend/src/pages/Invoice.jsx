@@ -14,14 +14,14 @@ const Invoice = ({ cartItems, paymentInfo }) => {
                 <div className="invoice-header">
                     <div>
                         <h1 className="logo">HYUNDAI PREMIER</h1>
-                        <p className="invoice-subtitle">Official Payment Receipt</p>
+                        <p className="invoice-subtitle">Official Order Receipt</p>
                     </div>
                     <div className="status-badge">{paymentInfo?.status || 'PAID'}</div>
                 </div>
 
                 <div className="invoice-meta-grid">
                     <div className="invoice-meta-box">
-                        <span className="meta-label">Payment ID</span>
+                        <span className="meta-label">Reference ID</span>
                         <strong>{paymentInfo?.paymentId || 'N/A'}</strong>
                     </div>
 
@@ -32,22 +32,31 @@ const Invoice = ({ cartItems, paymentInfo }) => {
 
                     <div className="invoice-meta-box">
                         <span className="meta-label">Customer Name</span>
-                        <strong>{paymentInfo?.cardholderName || 'N/A'}</strong>
-                    </div>
-
-                    <div className="invoice-meta-box">
-                        <span className="meta-label">Email Address</span>
-                        <strong>{paymentInfo?.email || 'N/A'}</strong>
+                        <strong>{paymentInfo?.customerName || 'N/A'}</strong>
                     </div>
 
                     <div className="invoice-meta-box">
                         <span className="meta-label">Payment Method</span>
                         <strong>{paymentInfo?.paymentMethod || 'Card Payment'}</strong>
                     </div>
+
+                    {paymentInfo?.email && (
+                        <div className="invoice-meta-box">
+                            <span className="meta-label">Email Address</span>
+                            <strong>{paymentInfo.email}</strong>
+                        </div>
+                    )}
+
+                    {paymentInfo?.phoneNumber && (
+                        <div className="invoice-meta-box">
+                            <span className="meta-label">Phone Number</span>
+                            <strong>{paymentInfo.phoneNumber}</strong>
+                        </div>
+                    )}
                 </div>
 
                 <div className="billing-section">
-                    <h3>Billing Address</h3>
+                    <h3>Delivery / Billing Address</h3>
                     <p>
                         {paymentInfo?.address || 'N/A'}
                         <br />
@@ -84,9 +93,9 @@ const Invoice = ({ cartItems, paymentInfo }) => {
 
                 <div className="invoice-footer">
                     {paymentInfo?.paymentMethod === 'Cash on Delivery' ? (
-                        <p>Payment will be collected at the time of delivery.</p>
+                        <p>Payment will be collected upon delivery of your order.</p>
                     ) : (
-                        <p>Thank you for shopping with Hyundai Premier.</p>
+                        <p>Your card payment has been successfully authorized.</p>
                     )}
 
                     <button className="print-btn" onClick={() => window.print()}>
