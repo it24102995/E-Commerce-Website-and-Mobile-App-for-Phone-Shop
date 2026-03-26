@@ -30,13 +30,22 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
     const stripe = useStripe();
     const elements = useElements();
 
-    const [formData, setFormData] = useState({
+    const [selectedMethod, setSelectedMethod] = useState('');
+
+    const [cardForm, setCardForm] = useState({
         cardholderName: '',
         email: '',
         address: '',
         city: '',
-        country: 'Sri Lanka',
-        paymentMethod: 'CARD'
+        country: 'Sri Lanka'
+    });
+
+    const [codForm, setCodForm] = useState({
+        fullName: '',
+        phoneNumber: '',
+        address: '',
+        city: '',
+        country: 'Sri Lanka'
     });
 
     const [errors, setErrors] = useState({});
@@ -49,10 +58,9 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
 
     const formattedDate = new Date().toLocaleString();
 
-    const handleChange = (e) => {
+    const handleCardInputChange = (e) => {
         const { name, value } = e.target;
-
-        setFormData((prev) => ({
+        setCardForm((prev) => ({
             ...prev,
             [name]: value
         }));
@@ -65,18 +73,23 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
         }
     };
 
-    const validateForm = () => {
-        const newErrors = {};
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const handleCodInputChange = (e) => {
+        const { name, value } = e.target;
 
-        if (!formData.cardholderName.trim()) newErrors.cardholderName = 'Cardholder name is required';
-        if (!emailRegex.test(formData.email)) newErrors.email = 'Invalid email address';
-        if (!formData.address.trim()) newErrors.address = 'Billing address is required';
-        if (!formData.city.trim()) newErrors.city = 'City is required';
-        if (cartItems.length === 0) newErrors.cart = 'Your cart is empty';
+        const finalValue =
+            name === 'phoneNumber' ? value.replace(/\D/g, '').substring(0, 10) : value;
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        setCodForm((prev) => ({
+            ...prev,
+            [name]: finalValue
+        }));
+
+        if (errors[name]) {
+            setErrors((prev) => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
     };
 
     const handleCardChange = (event) => {
@@ -87,22 +100,53 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
         }
     };
 
+    const validateCardForm = () => {
+        const newErrors = {};
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!cardForm.cardholderName.trim()) newErrors.cardholderName = 'Cardholder name is required';
+        if (!emailRegex.test(cardForm.email)) newErrors.email = 'Invalid email address';
+        if (!cardForm.address.trim()) newErrors.address = 'Billing address is required';
+        if (!cardForm.city.trim()) newErrors.city = 'City is required';
+        if (cartItems.length === 0) newErrors.cart = 'Your cart is empty';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const validateCodForm = () => {
+        const newErrors = {};
+
+        if (!codForm.fullName.trim()) newErrors.fullName = 'Full name is required';
+        if (!/^\d{10}$/.test(codForm.phoneNumber)) newErrors.phoneNumber = 'Phone number must be 10 digits';
+        if (!codForm.address.trim()) newErrors.address = 'Delivery address is required';
+        if (!codForm.city.trim()) newErrors.city = 'City is required';
+        if (cartItems.length === 0) newErrors.cart = 'Your cart is empty';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
+        if (!selectedMethod) {
+            setErrors({ paymentMethod: 'Please select a payment method' });
+            return;
+        }
 
-        // COD FLOW
-        if (formData.paymentMethod === 'COD') {
+        if (selectedMethod === 'COD') {
+            if (!validateCodForm()) return;
+
             setPaymentInfo({
                 paymentId: 'COD-' + Date.now(),
                 status: 'PENDING',
                 amount: subtotal,
-                cardholderName: formData.cardholderName,
-                email: formData.email,
-                address: formData.address,
-                city: formData.city,
-                country: formData.country,
+                customerName: codForm.fullName,
+                phoneNumber: codForm.phoneNumber,
+                address: codForm.address,
+                city: codForm.city,
+                country: codForm.country,
                 paymentMethod: 'Cash on Delivery',
                 paidAt: formattedDate
             });
@@ -111,74 +155,76 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
             return;
         }
 
-        // CARD FLOW
-        if (!stripe || !elements) return;
+        if (selectedMethod === 'CARD') {
+            if (!validateCardForm()) return;
+            if (!stripe || !elements) return;
 
-        setIsProcessing(true);
+            setIsProcessing(true);
 
-        try {
-            const amount = 1000;
+            try {
+                const amount = 1000;
 
-            const response = await fetch('http://localhost:8081/api/payment/create-payment-intent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ amount }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to create payment intent');
-            }
-
-            const cardElement = elements.getElement(CardElement);
-
-            const result = await stripe.confirmCardPayment(data.clientSecret, {
-                payment_method: {
-                    card: cardElement,
-                    billing_details: {
-                        name: formData.cardholderName,
-                        email: formData.email,
-                        address: {
-                            line1: formData.address,
-                            city: formData.city,
-                            country: 'LK'
-                        },
+                const response = await fetch('http://localhost:8081/api/payment/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
                     },
-                },
-            });
-
-            if (result.error) {
-                setCardError(result.error.message || 'Payment failed');
-                setIsProcessing(false);
-                return;
-            }
-
-            if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
-                setPaymentInfo({
-                    paymentId: result.paymentIntent.id,
-                    status: 'PAID',
-                    amount: subtotal,
-                    cardholderName: formData.cardholderName,
-                    email: formData.email,
-                    address: formData.address,
-                    city: formData.city,
-                    country: formData.country,
-                    paymentMethod: 'Card Payment',
-                    paidAt: formattedDate
+                    body: JSON.stringify({ amount }),
                 });
 
-                navigate('/invoice');
-            } else {
-                setCardError('Payment was not completed');
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create payment intent');
+                }
+
+                const cardElement = elements.getElement(CardElement);
+
+                const result = await stripe.confirmCardPayment(data.clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: cardForm.cardholderName,
+                            email: cardForm.email,
+                            address: {
+                                line1: cardForm.address,
+                                city: cardForm.city,
+                                country: 'LK'
+                            },
+                        },
+                    },
+                });
+
+                if (result.error) {
+                    setCardError(result.error.message || 'Payment failed');
+                    setIsProcessing(false);
+                    return;
+                }
+
+                if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+                    setPaymentInfo({
+                        paymentId: result.paymentIntent.id,
+                        status: 'PAID',
+                        amount: subtotal,
+                        customerName: cardForm.cardholderName,
+                        email: cardForm.email,
+                        address: cardForm.address,
+                        city: cardForm.city,
+                        country: cardForm.country,
+                        paymentMethod: 'Card Payment',
+                        paidAt: formattedDate
+                    });
+
+                    navigate('/invoice');
+                } else {
+                    setCardError('Payment was not completed');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                setCardError(error.message || 'Payment request failed');
+            } finally {
+                setIsProcessing(false);
             }
-        } catch (error) {
-            console.error('Payment error:', error);
-            setCardError(error.message || 'Payment request failed');
-        } finally {
-            setIsProcessing(false);
         }
     };
 
@@ -187,132 +233,196 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
             <div className="checkout-box">
                 <div className="checkout-topbar">
                     <span className="checkout-badge">SECURE CHECKOUT</span>
-                    <span className="checkout-powered">Powered by Stripe Sandbox</span>
+                    <span className="checkout-powered">Choose your preferred payment method</span>
                 </div>
 
-                <h2 className="luxury-header">Payment Authorization</h2>
+                <h2 className="luxury-header">Checkout Options</h2>
                 <p className="checkout-subtext">
-                    Complete your order using our protected payment interface.
+                    Select how you would like to complete your order.
                 </p>
 
                 <form className="checkout-form" onSubmit={handleSubmit}>
                     <div className="form-section">
-                        <p className="form-label">Cardholder Details</p>
+                        <p className="form-label">Select Payment Method</p>
 
-                        <input
-                            type="text"
-                            name="cardholderName"
-                            placeholder="Cardholder Name"
-                            value={formData.cardholderName}
-                            className={errors.cardholderName ? 'input-error' : ''}
-                            onChange={handleChange}
-                        />
-                        {errors.cardholderName && <span className="error-text">{errors.cardholderName}</span>}
+                        <div className="payment-choice-grid">
+                            <div
+                                className={`payment-choice-card ${selectedMethod === 'CARD' ? 'active' : ''}`}
+                                onClick={() => {
+                                    setSelectedMethod('CARD');
+                                    setErrors({});
+                                }}
+                            >
+                                <h3>Card Payment</h3>
+                                <p>Pay now using debit or credit card</p>
+                            </div>
 
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Email Address"
-                            value={formData.email}
-                            className={errors.email ? 'input-error' : ''}
-                            onChange={handleChange}
-                        />
-                        {errors.email && <span className="error-text">{errors.email}</span>}
+                            <div
+                                className={`payment-choice-card ${selectedMethod === 'COD' ? 'active' : ''}`}
+                                onClick={() => {
+                                    setSelectedMethod('COD');
+                                    setErrors({});
+                                }}
+                            >
+                                <h3>Cash on Delivery</h3>
+                                <p>Pay when your order is delivered</p>
+                            </div>
+                        </div>
+
+                        {errors.paymentMethod && (
+                            <span className="error-text">{errors.paymentMethod}</span>
+                        )}
                     </div>
 
-                    <div className="form-section">
-                        <p className="form-label">Billing Address</p>
+                    {selectedMethod === 'CARD' && (
+                        <>
+                            <div className="form-section">
+                                <p className="form-label">Cardholder Details</p>
 
-                        <textarea
-                            name="address"
-                            placeholder="Street Address"
-                            rows="3"
-                            value={formData.address}
-                            className={errors.address ? 'input-error' : ''}
-                            onChange={handleChange}
-                        />
-                        {errors.address && <span className="error-text">{errors.address}</span>}
-
-                        <div className="form-group">
-                            <div className="input-field">
                                 <input
                                     type="text"
-                                    name="city"
-                                    placeholder="City"
-                                    value={formData.city}
-                                    className={errors.city ? 'input-error' : ''}
-                                    onChange={handleChange}
+                                    name="cardholderName"
+                                    placeholder="Cardholder Name"
+                                    value={cardForm.cardholderName}
+                                    className={errors.cardholderName ? 'input-error' : ''}
+                                    onChange={handleCardInputChange}
                                 />
-                                {errors.city && <span className="error-text">{errors.city}</span>}
-                            </div>
+                                {errors.cardholderName && <span className="error-text">{errors.cardholderName}</span>}
 
-                            <div className="input-field">
                                 <input
-                                    type="text"
-                                    name="country"
-                                    placeholder="Country"
-                                    value={formData.country}
-                                    readOnly
+                                    type="email"
+                                    name="email"
+                                    placeholder="Email Address"
+                                    value={cardForm.email}
+                                    className={errors.email ? 'input-error' : ''}
+                                    onChange={handleCardInputChange}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="form-section">
-                        <p className="form-label">Payment Method</p>
-
-                        <div className="payment-methods">
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="CARD"
-                                    checked={formData.paymentMethod === 'CARD'}
-                                    onChange={handleChange}
-                                />
-                                Card Payment
-                            </label>
-
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="COD"
-                                    checked={formData.paymentMethod === 'COD'}
-                                    onChange={handleChange}
-                                />
-                                Cash on Delivery
-                            </label>
-                        </div>
-                    </div>
-
-                    {formData.paymentMethod === 'CARD' && (
-                        <div className="form-section">
-                            <p className="form-label">Card Information</p>
-
-                            <div className={`stripe-card-box ${cardError ? 'input-error' : ''}`}>
-                                <CardElement
-                                    options={cardElementOptions}
-                                    onChange={handleCardChange}
-                                />
+                                {errors.email && <span className="error-text">{errors.email}</span>}
                             </div>
 
-                            {cardError && <span className="error-text">{cardError}</span>}
+                            <div className="form-section">
+                                <p className="form-label">Billing Address</p>
 
-                            <div className="card-meta-row">
-                                <span>Accepted Cards</span>
-                                <span>Visa / Mastercard / Amex</span>
+                                <textarea
+                                    name="address"
+                                    placeholder="Street Address"
+                                    rows="3"
+                                    value={cardForm.address}
+                                    className={errors.address ? 'input-error' : ''}
+                                    onChange={handleCardInputChange}
+                                />
+                                {errors.address && <span className="error-text">{errors.address}</span>}
+
+                                <div className="form-group">
+                                    <div className="input-field">
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            placeholder="City"
+                                            value={cardForm.city}
+                                            className={errors.city ? 'input-error' : ''}
+                                            onChange={handleCardInputChange}
+                                        />
+                                        {errors.city && <span className="error-text">{errors.city}</span>}
+                                    </div>
+
+                                    <div className="input-field">
+                                        <input
+                                            type="text"
+                                            name="country"
+                                            value={cardForm.country}
+                                            readOnly
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+
+                            <div className="form-section">
+                                <p className="form-label">Card Details</p>
+
+                                <div className={`stripe-card-box ${cardError ? 'input-error' : ''}`}>
+                                    <CardElement
+                                        options={cardElementOptions}
+                                        onChange={handleCardChange}
+                                    />
+                                </div>
+
+                                {cardError && <span className="error-text">{cardError}</span>}
+
+                                <div className="card-meta-row">
+                                    <span>Accepted Cards</span>
+                                    <span>Visa / Mastercard / Amex</span>
+                                </div>
+                            </div>
+                        </>
                     )}
 
-                    {formData.paymentMethod === 'COD' && (
-                        <div className="form-section">
-                            <div className="cod-note-box">
-                                <strong>Cash on Delivery Selected</strong>
-                                <p>Payment will be collected when your order is delivered.</p>
+                    {selectedMethod === 'COD' && (
+                        <>
+                            <div className="form-section">
+                                <p className="form-label">Delivery Details</p>
+
+                                <input
+                                    type="text"
+                                    name="fullName"
+                                    placeholder="Full Name"
+                                    value={codForm.fullName}
+                                    className={errors.fullName ? 'input-error' : ''}
+                                    onChange={handleCodInputChange}
+                                />
+                                {errors.fullName && <span className="error-text">{errors.fullName}</span>}
+
+                                <input
+                                    type="text"
+                                    name="phoneNumber"
+                                    placeholder="Phone Number"
+                                    value={codForm.phoneNumber}
+                                    className={errors.phoneNumber ? 'input-error' : ''}
+                                    onChange={handleCodInputChange}
+                                />
+                                {errors.phoneNumber && <span className="error-text">{errors.phoneNumber}</span>}
+
+                                <textarea
+                                    name="address"
+                                    placeholder="Delivery Address"
+                                    rows="3"
+                                    value={codForm.address}
+                                    className={errors.address ? 'input-error' : ''}
+                                    onChange={handleCodInputChange}
+                                />
+                                {errors.address && <span className="error-text">{errors.address}</span>}
+
+                                <div className="form-group">
+                                    <div className="input-field">
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            placeholder="City"
+                                            value={codForm.city}
+                                            className={errors.city ? 'input-error' : ''}
+                                            onChange={handleCodInputChange}
+                                        />
+                                        {errors.city && <span className="error-text">{errors.city}</span>}
+                                    </div>
+
+                                    <div className="input-field">
+                                        <input
+                                            type="text"
+                                            name="country"
+                                            value={codForm.country}
+                                            readOnly
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+
+                            <div className="form-section">
+                                <div className="cod-note-box">
+                                    <strong>Cash on Delivery Selected</strong>
+                                    <p>Our delivery team will collect your payment when the order arrives.</p>
+                                </div>
+                            </div>
+                        </>
                     )}
 
                     {errors.cart && <span className="error-text">{errors.cart}</span>}
@@ -329,13 +439,13 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
                     >
                         {isProcessing
                             ? 'PROCESSING PAYMENT...'
-                            : formData.paymentMethod === 'COD'
+                            : selectedMethod === 'COD'
                                 ? 'PLACE COD ORDER'
-                                : 'AUTHORIZE PAYMENT'}
+                                : 'CONTINUE'}
                     </button>
 
                     <p className="security-note">
-                        🔒 Secure order processing and protected checkout experience
+                        🔒 Secure checkout and protected order processing
                     </p>
                 </form>
             </div>
