@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MobileShop â€“ My Orders</title>
+        <link rel="stylesheet" href="css/orders.css"/>
+    <link rel="stylesheet" href="css/responsive.css?v=20260328a"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="css/no-overlay.css?v=20260327c"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-brand">
+        <a href="index.html"><i class="fa-solid fa-mobile-screen-button"></i> MobileShop</a>
+    </div>
+    <div class="nav-links">
+        <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i> Cart <span id="cartBadge" class="badge">0</span></a>
+        <a href="orders.html" class="active"><i class="fa-solid fa-box"></i> My Orders</a>
+        <a href="about.html"><i class="fa-solid fa-circle-info"></i> About</a>
+        <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+        <span id="authButtons">
+            <a href="login.html" class="btn-nav">Login</a>
+        </span>
+        <span id="userGreeting" style="display:none">
+            <span class="greeting-text"></span>
+            <a href="#" onclick="logout()" class="btn-nav btn-outline">Logout</a>
+        </span>
+    </div>
+</nav>
+
+<div class="orders-container">
+    <h1 class="section-title"><i class="fa-solid fa-box-open"></i> My Orders</h1>
+    <div id="ordersList"></div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    initNavbar();
+    const user = getUser();
+    if (!user) {
+        window.location.href = 'login.html';
+    } else {
+        fetchMyOrders(user.userId);
+    }
+
+    async function fetchMyOrders(userId) {
+        const container = document.getElementById('ordersList');
+        container.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading your ordersâ€¦</div>';
+
+        try {
+            const res    = await fetch(`${API_BASE}/orders?userId=${userId}`);
+            const orders = await res.json();
+
+            if (!orders.length) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fa-solid fa-box-open fa-3x"></i>
+                        <h3>No orders yet</h3>
+                        <p>Browse our shop and place your first order!</p>
+                        <a href="index.html" class="btn-primary">Start Shopping</a>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(o => `
+                <div class="order-card animate-in">
+                    <div class="order-header">
+                        <span><strong>Order #${o.id}</strong></span>
+                        <span class="order-date"><i class="fa-regular fa-calendar"></i> ${new Date(o.orderDate).toLocaleDateString()}</span>
+                        <span class="pay-badge pay-${(o.paymentStatus||'').toLowerCase()}">${o.paymentStatus||'N/A'}</span>
+                        <span class="price">LKR ${(o.product?.price * o.quantity).toLocaleString()}</span>
+                    </div>
+                    <div class="order-items">
+                        <div class="order-item-row">
+                            <img src="${o.product?.image || 'https://via.placeholder.com/50'}"
+                                 alt="${o.product?.name}"
+                                 onerror="this.src='https://via.placeholder.com/50'"/>
+                            <div>
+                                <p>${o.product?.name || 'N/A'}</p>
+                                <p class="brand-text">Qty: ${o.quantity}</p>
+                            </div>
+                            <span class="price">LKR ${o.product?.price ? o.product.price.toLocaleString() : 0} each</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } catch {
+            container.innerHTML = '<p class="text-danger text-center">Failed to load orders.</p>';
+        }
+    }
+</script>
+</body>
+</html>
+
+
+
+

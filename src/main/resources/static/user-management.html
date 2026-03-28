@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="User Management Admin Panel - Responsive Mobile-Friendly Design"/>
+    <title>User Management â€“ Admin Panel</title>
+        <link rel="stylesheet" href="css/admin.css?v=20260327b"/>
+    <link rel="stylesheet" href="css/responsive.css?v=20260328a"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="css/no-overlay.css?v=20260327c"/>
+</head>
+<body class="admin-shell-page">
+
+<nav class="navbar">
+    <div class="nav-brand">
+        <a href="index.html"><i class="fa-solid fa-mobile-screen-button"></i> MobileShop</a>
+    </div>
+    <div class="nav-links">
+      
+        <a href="admin.html"><i class="fa-solid fa-screwdriver-wrench"></i> Admin</a>
+        <a href="user-management.html" class="active"><i class="fa-solid fa-users"></i> Users</a>
+        <a href="profiles.html"><i class="fa-solid fa-address-card"></i> Profiles</a>
+      
+        <span id="adminGreeting" class="greeting-text"></span>
+        <a href="#" onclick="logout()" class="btn-nav btn-outline">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<div class="admin-container">
+    <h1 class="admin-title"><i class="fa-solid fa-users"></i> User Management</h1>
+
+    <!-- STATS CARDS -->
+    <div class="stats-grid" id="statsGrid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card stat-blue">
+            <i class="fa-solid fa-users"></i><strong id="st-total">-</strong><span>Total Users</span>
+        </div>
+        <div class="stat-card stat-green">
+            <i class="fa-solid fa-shield-halved"></i><strong id="st-admin">-</strong><span>Administrators</span>
+        </div>
+        <div class="stat-card stat-yellow">
+            <i class="fa-solid fa-user"></i><strong id="st-users">-</strong><span>Regular Users</span>
+        </div>
+    </div>
+
+    <!-- ADD / EDIT USER FORM -->
+    <div class="admin-card">
+        <h2 id="formTitle"><i class="fa-solid fa-user-plus"></i>  UPDATED User</h2>
+        <form id="userForm" onsubmit="handleUserSubmit(event)" novalidate>
+            <input type="hidden" id="editId"/>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="uName" placeholder="e.g. John Doe" required/>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="uEmail" placeholder="e.g. john@example.com" required/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="uPassword" placeholder="Enter password" required/>
+                </div>
+                <div class="form-group">
+                    <label>Role *</label>
+                    <select id="uRole" required>
+                        <option value="" disabled selected>Select a role</option>
+                        <option value="USER">User</option>
+                        <option value="ADMIN">Administrator</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    <i class="fa-solid fa-floppy-disk"></i> Save User
+                </button>
+                <button type="button" class="btn-outline-danger" onclick="resetForm()">
+                    <i class="fa-solid fa-xmark"></i> Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- USERS TABLE -->
+    <div class="admin-card">
+        <div class="card-header-row">
+            <h2><i class="fa-solid fa-list"></i> All Users</h2>
+            <div class="search-bar search-bar-sm">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="tblSearch" placeholder="Search usersâ€¦" oninput="filterTable()"/>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="admin-table" id="userTable">
+                <thead>
+                    <tr>
+                        <th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <tr><td colspan="6" class="text-center">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Loadingâ€¦
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/app.js"></script>
+<script src="js/user-management.js"></script>
+
+<script>
+    // Guard: only ADMIN
+    const user = getUser();
+    if (!user || user.role !== 'ADMIN') {
+        document.body.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f4f5fb;font-family:sans-serif">
+            <div style="background:#fff;padding:3rem 2.5rem;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);text-align:center;max-width:420px">
+                <i class="fa-solid fa-shield-halved" style="font-size:3rem;color:#ef4444;margin-bottom:1rem;display:block"></i>
+                <h2 style="color:#1f2937;margin-bottom:.6rem">Access Denied</h2>
+                <p style="color:#6b7280;margin-bottom:1.5rem">This area is for Admins only.</p>
+                <a href="index.html" style="padding:.7rem 1.5rem;background:#6c63ff;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;margin-right:.5rem">Home</a>
+                <a href="login.html" style="padding:.7rem 1.5rem;border:1.5px solid #6c63ff;color:#6c63ff;border-radius:10px;text-decoration:none;font-weight:600">Login</a>
+            </div></div>`;
+        throw new Error('Access denied');
+    }
+
+    document.getElementById('adminGreeting').innerHTML =
+        `<span class="role-pill admin"><i class="fa-solid fa-shield-halved"></i> ${user.username || user.name}</span>`;
+
+    // Initialize the page
+    loadUsers();
+    updateStats();
+</script>
+
+</body>
+</html>
+
+
+
