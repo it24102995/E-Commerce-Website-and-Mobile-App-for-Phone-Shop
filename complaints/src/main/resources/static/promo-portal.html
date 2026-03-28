@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyundai Promotion Management</title>
+    <style>
+        /* --- THEME & ANIMATIONS --- */
+        :root {
+            --hyundai-blue: #002c5f;
+            --hyundai-light: #f4f7f6;
+            --success-green: #27ae60;
+        }
+body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            /* --- PREMIUM TECH BACKGROUND --- */
+            /* A dark, transparent overlay on top of a sleek smartphone desk image */
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), 
+                              url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=2000'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- LOGIN PAGE --- */
+        #login-section {
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 300px; text-align: center;
+        }
+        .login-box h2 { color: var(--hyundai-blue); margin-bottom: 20px; }
+        .input-field {
+            width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc;
+            border-radius: 4px; box-sizing: border-box;
+        }
+        .btn-primary {
+            width: 100%; padding: 10px; background-color: var(--hyundai-blue);
+            color: white; border: none; border-radius: 4px; cursor: pointer;
+            font-weight: bold; transition: background 0.3s;
+        }
+        .btn-primary:hover { background-color: #001f44; }
+
+        /* --- DASHBOARD --- */
+        .navbar {
+            background-color: var(--hyundai-blue); color: white;
+            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-tabs button {
+            background: none; border: none; color: white; font-size: 16px;
+            margin-right: 15px; cursor: pointer; opacity: 0.7; transition: 0.3s;
+        }
+        .nav-tabs button.active { opacity: 1; font-weight: bold; border-bottom: 2px solid white; }
+        .container { padding: 30px; max-width: 1000px; margin: auto; }
+        
+        /* --- TABLES & FORMS --- */
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: var(--hyundai-blue); color: white; }
+        .status-badge { background: var(--success-green); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        /* --- PROMO POPUP STYLES --- */
+.promo-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Dark background overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.promo-overlay.show {
+    opacity: 1;
+}
+
+.promo-modal-content {
+    background: white;
+    padding: 40px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+    border: 2px solid #002c5f; /* Hyundai Blue Border */
+    transform: translateY(-20px);
+    transition: transform 0.4s ease;
+}
+
+.promo-overlay.show .promo-modal-content {
+    transform: translateY(0);
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px; right: 15px;
+    background: none; border: none;
+    font-size: 24px; cursor: pointer;
+    color: #333;
+}
+
+.promo-modal-content h2 {
+    font-size: 40px;
+    color: #002c5f;
+    margin: 0;
+}
+
+.promo-subtitle {
+    font-size: 14px;
+    color: #666;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+}
+
+.promo-code-box {
+    background-color: #002c5f;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 15px;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+}
+
+.promo-instructions {
+    font-size: 10px;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.copy-btn {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.copy-btn:hover { background-color: #e67e22; }
+    </style>
+</head>
+<body>
+    <div id="promo-modal-overlay" class="promo-overlay hidden">
+    <div class="promo-modal-content">
+        <button id="close-promo-btn" class="close-btn">&times;</button>
+        
+        <h2 id="popup-discount-text">15% OFF</h2>
+        <p class="promo-subtitle">WHEN YOU BUY NOW</p>
+        
+        <div class="promo-code-box" id="popup-promo-code">
+            LOADING...
+        </div>
+        
+        <p class="promo-instructions">COPY CODE FOR USE AT CHECKOUT</p>
+        <button id="copy-code-btn" class="copy-btn">Copy Code</button>
+    </div>
+</div>
+
+    <div id="login-section" class="fade-in">
+        <div class="login-box">
+            <h2>Marketing Portal</h2>
+            <p style="font-size: 12px; color: gray;">Authorized Personnel Only</p>
+            <form id="promo-login-form">
+                <input type="text" id="username" class="input-field" placeholder="Username (marketing)" required>
+                <input type="password" id="password" class="input-field" placeholder="Password (promo123)" required>
+                <button type="submit" class="btn-primary">Secure Login</button>
+                <p id="login-error" style="color: red; font-size: 14px; margin-top: 10px;"></p>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard-section" class="hidden fade-in">
+        <div class="navbar">
+            <h2>Promotion Management</h2>
+            <div class="nav-tabs">
+                <button id="tab-add" class="active" onclick="switchTab('add')">Add Voucher</button>
+                <button id="tab-view" onclick="switchTab('view')">View All Vouchers</button>
+                <button onclick="logout()" style="color: #ff4d4d;">Logout</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div id="add-tab" class="card fade-in">
+                <h3 style="color: var(--hyundai-blue);">Create New Discount Voucher</h3>
+                <form id="create-promo-form" style="max-width: 400px;">
+                    <label>Voucher Code:</label>
+                    <input type="text" id="new-code" class="input-field" placeholder="e.g. WINTER25" style="text-transform: uppercase;" required>
+                    
+                    <label>Discount Percentage (%):</label>
+                    <input type="number" id="new-discount" class="input-field" placeholder="e.g. 25" min="1" max="100" required>
+                    
+                    <button type="submit" class="btn-primary" style="background-color: var(--success-green);">Generate Voucher</button>
+                    <p id="create-message" style="margin-top: 10px; font-weight: bold;"></p>
+                </form>
+            </div>
+
+            <div id="view-tab" class="card hidden fade-in">
+                <h3 style="color: var(--hyundai-blue);">Active Vouchers</h3>
+                <table>
+            <thead>
+         <tr>
+        <th>Voucher Code</th>
+        <th>Discount (%)</th>
+        <th>Status</th>
+        <th>Actions</th> </tr>
+            </thead>
+                    <tbody id="promo-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    // 1. Trigger the popup after 3 seconds (3000 milliseconds)
+    setTimeout(loadAndShowPopup, 3000);
+
+    // 2. Setup Close Button
+    document.getElementById('close-promo-btn').addEventListener('click', () => {
+        document.getElementById('promo-modal-overlay').classList.remove('show');
+        setTimeout(() => document.getElementById('promo-modal-overlay').classList.add('hidden'), 400);
+    });
+
+    // 3. Setup Copy Button
+    document.getElementById('copy-code-btn').addEventListener('click', () => {
+        const code = document.getElementById('popup-promo-code').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const copyBtn = document.getElementById('copy-code-btn');
+            copyBtn.textContent = "Copied!";
+            copyBtn.style.backgroundColor = "#27ae60"; // Turn green
+            setTimeout(() => {
+                copyBtn.textContent = "Copy Code";
+                copyBtn.style.backgroundColor = "#f39c12"; // Revert to orange
+            }, 2000);
+        });
+    });
+});
+
+async function loadAndShowPopup() {
+    try {
+        const response = await fetch('http://localhost:8080/api/promotions');
+        const promotions = await response.json();
+        
+        // 1. Get ALL active promotions, not just the first one
+        const activePromos = promotions.filter(p => p.active === true);
+
+        if (activePromos.length > 0) {
+            // 2. Pick a completely RANDOM promotion from the active list
+            const randomIndex = Math.floor(Math.random() * activePromos.length);
+            const randomPromo = activePromos[randomIndex];
+
+            // 3. Inject the random data into the popup
+            document.getElementById('popup-discount-text').textContent = `${randomPromo.discountPercentage}% OFF`;
+            document.getElementById('popup-promo-code').textContent = randomPromo.promoCode;
+            
+            // 4. DYNAMIC THEME: Change the popup's look based on the code!
+            const modalContent = document.querySelector('.promo-modal-content');
+            
+            // If the code has "SUMMER" in it, make the border and text orange
+            if (randomPromo.promoCode.includes('SUMMER')) {
+                modalContent.style.borderColor = "#f39c12"; 
+                document.getElementById('popup-discount-text').style.color = "#f39c12";
+                document.getElementById('popup-promo-code').style.backgroundColor = "#f39c12";
+            } 
+            // Otherwise, stick to the classic Hyundai Blue
+            else {
+                modalContent.style.borderColor = "#002c5f"; 
+                document.getElementById('popup-discount-text').style.color = "#002c5f";
+                document.getElementById('popup-promo-code').style.backgroundColor = "#002c5f";
+            }
+            
+            // Show the modal
+            const modalOverlay = document.getElementById('promo-modal-overlay');
+            modalOverlay.classList.remove('hidden');
+            setTimeout(() => modalOverlay.classList.add('show'), 10); 
+        }
+    } catch (error) {
+        console.error("No active promotions found or database offline.");
+    }
+}
+        // --- LOGIN LOGIC ---
+        document.getElementById('promo-login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            // Secure validation credentials
+            if (user === "marketing" && pass === "promo123") {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                loadPromotions(); // Fetch data immediately on login
+            } else {
+                document.getElementById('login-error').textContent = "Invalid Marketing Credentials!";
+            }
+        });
+
+        function logout() {
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('promo-login-form').reset();
+        }
+
+        // --- TAB SWITCHING LOGIC ---
+        function switchTab(tabName) {
+            document.getElementById('add-tab').classList.add('hidden');
+            document.getElementById('view-tab').classList.add('hidden');
+            document.getElementById('tab-add').classList.remove('active');
+            document.getElementById('tab-view').classList.remove('active');
+
+            if (tabName === 'add') {
+                document.getElementById('add-tab').classList.remove('hidden');
+                document.getElementById('tab-add').classList.add('active');
+            } else {
+                document.getElementById('view-tab').classList.remove('hidden');
+                document.getElementById('tab-view').classList.add('active');
+                loadPromotions(); // Refresh table when opening tab
+            }
+        }
+
+        // --- BACKEND CONNECTION (CREATE VOUCHER) ---
+        document.getElementById('create-promo-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const code = document.getElementById('new-code').value.toUpperCase();
+            const discount = document.getElementById('new-discount').value;
+            const msg = document.getElementById('create-message');
+
+            const newPromo = { promoCode: code, discountPercentage: parseFloat(discount), active: true };
+
+            try {
+                const response = await fetch('http://localhost:8080/api/promotions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newPromo)
+                });
+
+                if (response.ok) {
+                    msg.textContent = `Success! Voucher ${code} is now active.`;
+                    msg.style.color = "green";
+                    this.reset();
+                } else {
+                    msg.textContent = "Error: Voucher code might already exist.";
+                    msg.style.color = "red";
+                }
+            } catch (error) {
+                msg.textContent = "Server disconnected. Is Spring Boot running?";
+                msg.style.color = "red";
+            }
+        });
+
+        // --- BACKEND CONNECTION (FETCH VOUCHERS) ---
+       // --- FETCH VOUCHERS (UPDATED WITH BUTTONS) ---
+        async function loadPromotions() {
+            const tableBody = document.getElementById('promo-table-body');
+            tableBody.innerHTML = "<tr><td colspan='4'>Loading vouchers...</td></tr>";
+
+            try {
+                const response = await fetch('http://localhost:8080/api/promotions');
+                const data = await response.json();
+                
+                tableBody.innerHTML = ""; 
+                
+                data.forEach(promo => {
+                    const statusHtml = promo.active 
+                        ? `<span class="status-badge">ACTIVE</span>` 
+                        : `<span style="color:red; font-weight:bold;">INACTIVE</span>`;
+                        
+                    const toggleBtnText = promo.active ? "Deactivate" : "Reactivate";
+                    const toggleBtnColor = promo.active ? "#f39c12" : "#27ae60";
+
+                    const row = `<tr>
+                                    <td style="font-weight: bold;">${promo.promoCode}</td>
+                                    <td>${promo.discountPercentage}%</td>
+                                    <td>${statusHtml}</td>
+                                    <td>
+                                        <button onclick="togglePromo(${promo.id})" style="background-color: ${toggleBtnColor}; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+                                            ${toggleBtnText}
+                                        </button>
+                                        <button onclick="deletePromo(${promo.id})" style="background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                                            Delete
+                                        </button>
+                                    </td>
+                                 </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                tableBody.innerHTML = "<tr><td colspan='4' style='color:red;'>Failed to load data from database.</td></tr>";
+            }
+        }
+
+        // --- DEACTIVATE / REACTIVATE LOGIC ---
+        async function togglePromo(id) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/promotions/${id}/toggle`, {
+                    method: 'PUT'
+                });
+                if (response.ok) {
+                    loadPromotions(); // Refresh the table instantly
+                } else {
+                    alert("Error changing promotion status.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        // --- DELETE LOGIC ---
+        async function deletePromo(id) {
+            if (!confirm("Are you sure you want to permanently delete this voucher?")) return;
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/promotions/${id}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    loadPromotions(); // Refresh the table instantly
+                } else {
+                    alert("Error deleting promotion.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+    </script>
+</body>
+</html>

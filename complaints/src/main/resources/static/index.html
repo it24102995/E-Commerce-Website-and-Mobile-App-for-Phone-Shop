@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyundai Premier - Complaint System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  
+
+
+<div id="login-container" class="page-container fade-in">
+    <div class="login-box">
+        <div class="brand">
+            <i class="fas fa-headset brand-icon"></i>
+            <h1>Hyundai Premier</h1>
+            <p>Staff Complaint Management System</p>
+        </div><br>
+        <form id="login-form">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter staff username" required>
+            </div>
+            <br> 
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <br>
+            <button type="submit" class="login-btn">
+                <span class="btn-text">Login</span>
+                <i class="fas fa-sign-in-alt login-arrow"></i>
+            </button>
+            <p id="login-error" class="error-msg"></p>
+        </form>
+    </div>
+</div>
+
+<div id="dashboard-container" class="page-container hidden">
+    <div class="dashboard-wrapper">
+        
+        <aside class="sidebar slide-right">
+            <div class="profile">
+                <div class="profile-pic">
+                    <img src="https://via.placeholder.com/40" alt="Staff Pic">
+                </div>
+                <div class="profile-info">
+                    <p class="staff-title">Hyundai Premier</p>
+                    <p class="staff-role">Complaint Management System</p>
+                </div>
+            </div>
+            <nav class="side-nav">
+                <a href="#" class="nav-item active" data-target="dashboard-section"><i class="fas fa-th-large"></i> Dashboard</a>
+                
+                <a href="#" class="nav-item" id="nav-active" data-target="all-complaints-section" onclick="filterComplaints('ACTIVE')"><i class="fas fa-list-ul"></i> All Complaints</a>
+                
+                <a href="#" class="nav-item" id="nav-solved" data-target="all-complaints-section" onclick="filterComplaints('SOLVED')"><i class="fas fa-check-circle"></i> Solved Complaints</a>
+                
+                <a href="#" class="nav-item" data-target="submit-complaint-section"><i class="fas fa-plus-circle"></i> Submit Complaint</a>
+                <a href="#" class="nav-item logout-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </aside>
+        
+        <main class="content-area fade-in">
+            <header class="main-header">
+                <div class="header-titles">
+                    <h1 id="dynamic-title">Dashboard</h1>
+                    <p id="dynamic-subtitle">Overview of complaint statistics and recent activity</p>
+                </div>
+                <div class="header-actions">
+                    <button class="live-updates-btn"><i class="fas fa-sync-alt"></i> Live Updates</button>
+                </div>
+            </header>
+            
+            <div id="main-content-panels">
+
+                <section id="dashboard-section" class="panel-section active">
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <p class="stat-label">Total Complaints</p>
+                            <h2 class="stat-value">10</h2>
+                            <i class="stat-icon info-icon fas fa-info-circle"></i>
+                        </div>
+                        <div class="stat-card yellow">
+                            <p class="stat-label">Pending</p>
+                            <h2 class="stat-value">3</h2>
+                            <i class="stat-icon pending-icon fas fa-clock"></i>
+                        </div>
+                        <div class="stat-card blue">
+                            <p class="stat-label">In Progress</p>
+                            <h2 class="stat-value">3</h2>
+                            <i class="stat-icon progress-icon fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="stat-card green">
+                            <p class="stat-label">Resolved</p>
+                            <h2 class="stat-value">3</h2>
+                            <i class="stat-icon resolved-icon fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-section">
+                        <div class="chart-container-large slide-up">
+                            <h3>Complaints by Category</h3>
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        <div class="chart-container-small slide-up-delay">
+                            <h3>Status Distribution</h3>
+                            <canvas id="statusPieChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="all-complaints-section" class="panel-section hidden">
+                    <div class="table-controls slide-up" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-search" style="color: #666;"></i>
+                        <input type="text" id="complaint-search-bar" placeholder="Search by ID, H-Code, Customer Name, or Status..." style="padding: 10px; width: 100%; max-width: 400px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+
+                    <div class="workable-grid-container slide-up">
+                        <table id="complaints-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>H-Code</th>
+                                    <th>Customer</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Severity</th>
+                                    <th>Status</th>
+                                    <th>Assigned Staff</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="complaints-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <section id="submit-complaint-section" class="panel-section hidden">
+                    <div class="form-card slide-up">
+                        <h2>Submit New Complaint</h2>
+                        <p class="form-sub">Fill out the form below to register a new customer complaint</p>
+                        
+                        <form id="new-complaint-form">
+                            <div class="form-section-title">Customer Information</div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="full_name">Full Name *</label>
+                                    <input type="text" id="full_name" name="full_name" placeholder="John Smith" required>
+                                </div>
+                                <div class="input-col">
+                                   <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" placeholder="john.smith@email.com" 
+       pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" 
+                                    title="Please enter a valid email address (e.g., name@domain.com)" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="phone_number">Phone Number *</label>
+                                <input type="text" id="phone_number" name="phone_number" placeholder="+94-555-0123" 
+                                    pattern="^\+?[0-9\s\-]{10}$" 
+                                    title="Phone number must be  10 " required>
+                                </div>
+                                <div class="input-col">
+                                  <label for="order_id">Order ID *</label>
+                                    <input type="text" id="order_id" name="order_id" placeholder="ORD-2024-1234"
+                                        pattern="^ORD-\d{4}-\d{4}$"
+                                        title="Order ID must be in the format ORD-YYYY-XXXX (e.g., ORD-2024-1234)" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section-title">Product Information</div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="product_name">Product Name (Phone Model) *</label>
+                                    <select id="product_name" name="product_name" required>
+                                        <option value="" disabled selected>Select a phone model...</option>
+                                        <optgroup label="Apple iPhone">
+                                            <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
+                                            <option value="iPhone 15 Pro">iPhone 15 Pro</option>
+                                            <option value="iPhone 15">iPhone 15</option>
+                                            <option value="iPhone 14">iPhone 14</option>
+                                        </optgroup>
+                                        <optgroup label="Samsung Galaxy">
+                                            <option value="Samsung Galaxy S24 Ultra">Samsung Galaxy S24 Ultra</option>
+                                            <option value="Samsung Galaxy S24">Samsung Galaxy S24</option>
+                                            <option value="Samsung Galaxy Z Fold 5">Samsung Galaxy Z Fold 5</option>
+                                            <option value="Samsung Galaxy A54">Samsung Galaxy A54</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="input-col">
+                                    <label for="h_tracking_number">H Code *</label>
+                                    <input type="text" id="h_tracking_number" name="h_tracking_number" placeholder="Enter the H code" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section-title">Complaint Details</div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="category">Category *</label>
+                                    <select id="category" name="category" required>
+                                        <option value="" disabled selected>Defective Product</option>
+                                        <option value="Delivery Issue">Delivery Issue</option>
+                                        <option value="Wrong Item">Wrong Item</option>
+                                        <option value="Customer Service">Customer Service</option>
+                                        <option value="Warranty Claim">Warranty Claim</option>
+                                        <option value="Refund Request">Refund Request</option>
+                                    </select>
+                                </div>
+                                <div class="input-col">
+                                    <label for="priority">Priority *</label>
+                                    <select id="priority" name="priority" required>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="Low">Low</option>
+                                        <option value="High">High</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row full">
+                                <div class="input-col">
+                                    <label for="description">Detailed Description *</label>
+                                    <textarea id="description" name="description" placeholder="Provide as much detail as possible about the issue..." required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-section-title">Resolution Tracking (Internal Use Only)</div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="severity">Severity Selection (Internal) *</label>
+                                    <select id="severity" name="severity" required>
+                                        <option value="Medium" selected>Medium Severity</option>
+                                        <option value="Low">Low Severity</option>
+                                        <option value="High">High Severity</option>
+                                    </select>
+                                </div>
+                                <div class="input-col staff-assign-col">
+                                    <label for="assigned_staff">Initial Staff Assignment *</label>
+                                    
+                                    <input list="staff-options" id="assigned_staff" name="assigned_staff" placeholder="Search and select staff..." required>
+                                    <datalist id="staff-options">
+                                    </datalist>
+
+                                    <div class="toggle-switch" style="margin-top: 10px;">
+                                        <input type="checkbox" id="assigned-toggle" checked>
+                                        <label for="assigned-toggle" class="toggle-label"></label>
+                                        <span class="toggle-status-text">Initially Assigned</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="submit-btn form-submit">Register New Complaint</button>
+                        </form>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
