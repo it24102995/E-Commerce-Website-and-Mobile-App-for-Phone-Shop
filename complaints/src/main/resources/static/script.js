@@ -1,5 +1,6 @@
 // Global state to hold complaints for searching and rendering
 let complaintsState = [];
+let currentTab = 'ACTIVE'; // NEW: Tracks which tab we are currently viewing
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize Login
@@ -9,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Initialize Dashboard if we are already logged in (for testing)
-    // If you want to bypass login during development, you can uncomment the next two lines:
     // document.getElementById('login-container').classList.add('hidden');
     // showDashboard();
 });
@@ -17,17 +17,35 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 // LOGIN & NAVIGATION LOGIC
 // ==========================================
+// ==========================================
+// LOGIN & NAVIGATION LOGIC
+// ==========================================
 function handleLogin(e) {
     e.preventDefault();
-    // Dummy login validation - replace with real auth if needed
+    
+    // Get the values the user typed in
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
 
-    if (user && pass) {
+    // SET YOUR SPECIFIC USERNAME AND PASSWORD HERE
+    const validUsername = "admin";
+    const validPassword = "password123";
+
+    // Check if what they typed matches your specific credentials
+    if (user === validUsername && pass === validPassword) {
+        // Success! Hide login and show dashboard
+        document.getElementById('login-error').textContent = ''; // clear any old errors
         document.getElementById('login-container').classList.add('hidden');
         showDashboard();
     } else {
-        document.getElementById('login-error').textContent = 'Invalid credentials';
+        // Failed! Show error message
+        const errorElement = document.getElementById('login-error');
+        if (errorElement) {
+            errorElement.textContent = 'Invalid username or password!';
+            errorElement.style.color = 'red'; // Just to make sure it stands out
+        } else {
+            alert('Invalid username or password!');
+        }
     }
 }
 
@@ -38,7 +56,6 @@ function showDashboard() {
 }
 
 function initializeDashboard() {
-    // Populate the Staff Dropdown list
     populateStaffDropdown();
 
     // Sidebar Navigation Logic
@@ -47,16 +64,15 @@ function initializeDashboard() {
 
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
-            e.preventDefault();
+            // Only prevent default if it has a target, otherwise let onclick handle it
+            e.preventDefault(); 
             
-            // Remove active class from all nav items and sections
             navItems.forEach(nav => nav.classList.remove('active'));
             sections.forEach(sec => {
                 sec.classList.remove('active');
                 sec.classList.add('hidden');
             });
 
-            // Add active class to clicked nav and target section
             item.classList.add('active');
             const targetId = item.getAttribute('data-target');
             const targetSection = document.getElementById(targetId);
@@ -66,18 +82,17 @@ function initializeDashboard() {
                 targetSection.classList.add('active');
             }
             
-            // Update Header Title dynamically
             document.getElementById('dynamic-title').textContent = item.textContent.trim();
         });
     });
 
-    // Form Submission for New Complaints
+    // Form Submission
     const newComplaintForm = document.getElementById('new-complaint-form');
     if (newComplaintForm) {
         newComplaintForm.addEventListener('submit', handleNewComplaint);
     }
 
-    // Toggle Switch Text Logic (Assigned / Unassigned)
+    // Toggle Switch
     const toggle = document.getElementById('assigned-toggle');
     const toggleText = document.querySelector('.toggle-status-text');
     const staffInput = document.getElementById('assigned_staff');
@@ -116,7 +131,7 @@ function initializeDashboard() {
 }
 
 // ==========================================
-// NEW FEATURE: POPULATE STAFF DROPDOWN
+// STAFF DROPDOWN & SEARCH
 // ==========================================
 function populateStaffDropdown() {
     const staffMembers = [
@@ -140,14 +155,17 @@ function populateStaffDropdown() {
     });
 }
 
-// ==========================================
-// NEW FEATURE: UNIFIED SEARCH FUNCTION
-// ==========================================
 function handleSearch(e) {
     const searchTerm = e.target.value.toLowerCase();
     
-    // Filter the state array based on ID, H-Code, Customer Name, or Status
-    const filteredComplaints = complaintsState.filter(tkt => {
+    // First, respect the current tab filter
+    let baseData = complaintsState.filter(complaint => {
+        const status = (complaint.status || '').toUpperCase();
+        return currentTab === 'SOLVED' ? status === 'RESOLVED' : status !== 'RESOLVED';
+    });
+
+    // Then apply the search term
+    const filteredComplaints = baseData.filter(tkt => {
         return (
             (tkt.ticketId && tkt.ticketId.toLowerCase().includes(searchTerm)) ||
             (tkt.hTrackingNumber && tkt.hTrackingNumber.toLowerCase().includes(searchTerm)) ||
@@ -156,32 +174,46 @@ function handleSearch(e) {
         );
     });
 
-    // Render the table with only the filtered data
     renderComplaintsTable(filteredComplaints);
 }
 
 // ==========================================
-// DATA FETCHING & RENDERING (SPRING BOOT INTEGRATION)
+// NEW FEATURE: FILTER TABS
 // ==========================================
+function filterComplaints(tabType) {
+    currentTab = tabType;
+    
+    // Filter the global state
+    const filteredData = complaintsState.filter(complaint => {
+        const status = (complaint.status || '').toUpperCase();
+        if (currentTab === 'SOLVED') {
+            return status === 'RESOLVED';
+        } else {
+            return status !== 'RESOLVED'; // Shows Pending and In Progress
+        }
+    });
 
-// 1. Fetch from database
+    renderComplaintsTable(filteredData); 
+}
+
+// ==========================================
+// DATA FETCHING & RENDERING
+// ==========================================
 async function fetchComplaints() {
     try {
-        // UPDATE THIS URL IF YOUR SPRING BOOT PORT/ENDPOINT IS DIFFERENT
         const response = await fetch('http://localhost:8080/api/complaints');
         if (!response.ok) throw new Error("Failed to fetch data");
         
         const data = await response.json();
-        complaintsState = data; // Save to global state for searching
+        complaintsState = data; 
         
-        renderComplaintsTable();
+        filterComplaints(currentTab); // Re-apply the current tab filter
         updateDashboardStats();
     } catch (error) {
         console.error("Error fetching complaints:", error);
     }
 }
 
-// 2. Render Table (WITH THE EXACT 9-COLUMN FIX)
 function renderComplaintsTable(dataToRender = complaintsState) {
     const tbody = document.getElementById('complaints-table-body');
     if (!tbody) return;
@@ -189,7 +221,7 @@ function renderComplaintsTable(dataToRender = complaintsState) {
     tbody.innerHTML = ''; 
 
     if (dataToRender.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 20px;">No complaints found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 20px;">No complaints found in this category.</td></tr>`;
         return;
     }
 
@@ -213,31 +245,31 @@ function renderComplaintsTable(dataToRender = complaintsState) {
             ? '<i class="fas fa-exclamation-circle" style="color:#e67e22; margin-left:5px"></i>' 
             : '<i class="fas fa-user-check" style="color:#2ecc71; margin-left:5px; font-size:12px;"></i>';
 
+        // NEW: Decide whether to show the Resolve button based on status
+        const isResolved = safeStatus.toUpperCase() === 'RESOLVED';
+        const resolveButtonHTML = !isResolved ? 
+            `<button onclick="resolveComplaint(${tkt.id})" title="Mark as Resolved" style="background: none; border: none; cursor: pointer; margin-right: 15px;">
+                <i class="fas fa-check-circle" style="color: #27ae60; font-size: 18px; transition: transform 0.2s;"></i>
+            </button>` : '';
+
         row.innerHTML = `
             <td><strong>${tkt.ticketId || tkt.id || "NEW-TKT"}</strong></td>
-            
             <td style="color: #002c5f; font-weight: bold;">${tkt.hTrackingNumber || "N/A"}</td>
-            
             <td>
                 <span style="font-weight: 500; color: #333;">${tkt.customerName || "Unknown Customer"}</span><br>
                 <span style="font-size:11px; color:#aaa">${tkt.email || "No email"}</span>
             </td>
-            
             <td>${tkt.category || tkt.issue_type || "General"}</td>
-            
             <td>${getBadge(safePriority, priorityType)}</td>
-            
             <td>${getBadge(safeSeverity, severityType)}</td>
-            
             <td>${getBadge(safeStatus, statusType)}</td>
-            
             <td style="text-transform: uppercase; font-size: 0.85em; font-weight: bold; color: #555;">
                 ${staffName} ${staffIcon}
             </td>
-            
             <td>
+                ${resolveButtonHTML}
                 <button class="delete-btn" onclick="deleteComplaint(${tkt.id}, this)" title="Delete Complaint" style="background: none; border: none; cursor: pointer;">
-                    <i class="fas fa-trash-alt" style="color: #777; font-size: 16px; transition: color 0.2s;"></i>
+                    <i class="fas fa-trash-alt" style="color: #e74c3c; font-size: 18px; transition: transform 0.2s;"></i>
                 </button>
             </td>
         `;
@@ -246,33 +278,29 @@ function renderComplaintsTable(dataToRender = complaintsState) {
     });
 }
 
-// 3. Handle Form Submission (Saving to Spring Boot)
+// ==========================================
+// CRUD OPERATIONS
+// ==========================================
 async function handleNewComplaint(e) {
     e.preventDefault();
-
     const form = e.target;
 
-    // --- NEW VALIDATION CHECK ---
-    // This forces the HTML pattern/regex rules to trigger before sending data
     if (!form.checkValidity()) {
-        form.reportValidity(); // Shows the popup errors
-        return; // Stops the function right here
+        form.reportValidity(); 
+        return; 
     }
-    // ----------------------------
 
     const formData = new FormData(form);
-    
     const isAssigned = document.getElementById('assigned-toggle').checked;
     const assignedStaff = isAssigned ? formData.get('assigned_staff') : "Unassigned";
 
-    // Build the object exactly how Complaint.java expects it
     const newComplaint = {
         customerName: formData.get('full_name'),
         email: formData.get('email'),
         phone: formData.get('phone_number'),
         orderId: formData.get('order_id'),
-        productName: formData.get('product_name'),         // NEW: Grabs the selected phone from dropdown!
-        hTrackingNumber: formData.get('h_tracking_number'), // Grabs the H-Code
+        productName: formData.get('product_name'),
+        hTrackingNumber: formData.get('h_tracking_number'), 
         category: formData.get('category'), 
         priority: formData.get('priority'),
         description: formData.get('description'),
@@ -284,18 +312,15 @@ async function handleNewComplaint(e) {
     try {
         const response = await fetch('http://localhost:8080/api/complaints', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newComplaint)
         });
 
         if (response.ok) {
             alert('Complaint registered successfully!');
             form.reset();
-            // Go back to all complaints section
             document.querySelector('.nav-item[data-target="all-complaints-section"]').click();
-            fetchComplaints(); // Refresh the table data
+            fetchComplaints(); 
         } else {
             alert('Error saving complaint. Please check your backend.');
         }
@@ -305,7 +330,35 @@ async function handleNewComplaint(e) {
     }
 }
 
-// 4. Delete Complaint
+// NEW FEATURE: Resolve Complaint Function
+async function resolveComplaint(id) {
+    if (!confirm('Are you sure you want to mark this complaint as Resolved?')) return;
+
+    // We find the existing complaint so we can send the whole object back to Spring Boot
+    const existingComplaint = complaintsState.find(c => c.id === id);
+    if(!existingComplaint) return;
+
+    // Create a copy but change the status
+    const updatedComplaint = { ...existingComplaint, status: "RESOLVED" };
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/complaints/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedComplaint)
+        });
+
+        if (response.ok) {
+            // Re-fetch the data to refresh the tables and charts
+            fetchComplaints(); 
+        } else {
+            alert("Failed to resolve the complaint. Check your Spring Boot backend.");
+        }
+    } catch (error) {
+        console.error("Error resolving complaint:", error);
+    }
+}
+
 async function deleteComplaint(id, btnElement) {
     if (!confirm('Are you sure you want to delete this complaint?')) return;
 
@@ -315,16 +368,11 @@ async function deleteComplaint(id, btnElement) {
         });
 
         if (response.ok) {
-            // Remove from local state array
-            complaintsState = complaintsState.filter(c => c.id !== id);
-            // Re-render table
-            renderComplaintsTable();
-            updateDashboardStats();
-            
-            // Optional: visual deletion animation on the row
             const row = btnElement.closest('tr');
             row.style.opacity = '0';
-            setTimeout(() => row.remove(), 300);
+            setTimeout(() => {
+                fetchComplaints(); // Refresh table and stats after deletion
+            }, 300);
         } else {
             alert("Failed to delete the complaint.");
         }
@@ -333,7 +381,6 @@ async function deleteComplaint(id, btnElement) {
     }
 }
 
-// 5. Update Dashboard Statistics
 function updateDashboardStats() {
     const total = complaintsState.length;
     const pending = complaintsState.filter(c => (c.status || '').toUpperCase() === 'PENDING').length;
@@ -346,5 +393,117 @@ function updateDashboardStats() {
         statValues[1].textContent = pending;
         statValues[2].textContent = inProgress;
         statValues[3].textContent = resolved;
+    }
+}
+// ==========================================
+// PROMOTION & DISCOUNT LOGIC
+// ==========================================
+
+// Make sure to attach the event listener when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    const applyBtn = document.getElementById('apply-promo-btn');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', applyPromoCode);
+    }
+});
+
+async function applyPromoCode() {
+    // Get the code the user typed, remove extra spaces, and make it uppercase
+    const codeInput = document.getElementById('promo-code-input').value.trim().toUpperCase();
+    const messageEl = document.getElementById('promo-message');
+    
+    // Grab the current prices from the HTML
+    const originalPrice = parseFloat(document.getElementById('original-price').textContent);
+    
+    if (!codeInput) {
+        messageEl.textContent = "Please enter a code.";
+        messageEl.style.color = "red";
+        return;
+    }
+
+    try {
+        // 1. Send the code to our Spring Boot Backend
+        const response = await fetch(`http://localhost:8080/api/promotions/validate/${codeInput}`);
+        
+        if (response.ok) {
+            // 2. The code is VALID! Get the discount percentage
+            const promoData = await response.json();
+            const discountPercent = promoData.discountPercentage; // e.g., 10.0
+            
+            // 3. Do the math
+            const discountAmount = (originalPrice * (discountPercent / 100)).toFixed(2);
+            const finalPrice = (originalPrice - discountAmount).toFixed(2);
+            
+            // 4. Update the HTML with the new prices
+            document.getElementById('discount-amount').textContent = discountAmount;
+            document.getElementById('final-price').textContent = finalPrice;
+            
+            // Show success message
+            messageEl.textContent = `Success! ${discountPercent}% discount applied.`;
+            messageEl.style.color = "green";
+
+        } else {
+            // The code is INVALID or INACTIVE. The backend sends back an error message.
+            const errorText = await response.text();
+            messageEl.textContent = errorText || "Invalid promo code.";
+            messageEl.style.color = "red";
+            
+            // Reset the prices back to normal
+            document.getElementById('discount-amount').textContent = "0.00";
+            document.getElementById('final-price').textContent = originalPrice.toFixed(2);
+        }
+    } catch (error) {
+        console.error("Error applying promo code:", error);
+        messageEl.textContent = "Error connecting to the database.";
+        messageEl.style.color = "red";
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Trigger the popup after 3 seconds (3000 milliseconds)
+    setTimeout(loadAndShowPopup, 3000);
+
+    // 2. Setup Close Button
+    document.getElementById('close-promo-btn').addEventListener('click', () => {
+        document.getElementById('promo-modal-overlay').classList.remove('show');
+        setTimeout(() => document.getElementById('promo-modal-overlay').classList.add('hidden'), 400);
+    });
+
+    // 3. Setup Copy Button
+    document.getElementById('copy-code-btn').addEventListener('click', () => {
+        const code = document.getElementById('popup-promo-code').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const copyBtn = document.getElementById('copy-code-btn');
+            copyBtn.textContent = "Copied!";
+            copyBtn.style.backgroundColor = "#27ae60"; // Turn green
+            setTimeout(() => {
+                copyBtn.textContent = "Copy Code";
+                copyBtn.style.backgroundColor = "#f39c12"; // Revert to orange
+            }, 2000);
+        });
+    });
+});
+
+async function loadAndShowPopup() {
+    try {
+        // Fetch all promotions from your backend
+        const response = await fetch('http://localhost:8080/api/promotions');
+        const promotions = await response.json();
+        
+        // Find the first one that is currently ACTIVE
+        const activePromo = promotions.find(p => p.active === true);
+
+        if (activePromo) {
+            // Update the HTML with the database values!
+            document.getElementById('popup-discount-text').textContent = `${activePromo.discountPercentage}% OFF`;
+            document.getElementById('popup-promo-code').textContent = activePromo.promoCode;
+            
+            // Show the modal with a smooth fade-in
+            const modalOverlay = document.getElementById('promo-modal-overlay');
+            modalOverlay.classList.remove('hidden');
+            // Slight delay to allow CSS transition to trigger
+            setTimeout(() => modalOverlay.classList.add('show'), 10); 
+        }
+    } catch (error) {
+        console.error("No active promotions found or database offline.");
     }
 }

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyundai Employee Portal - Login</title>
+    <style>
+        /* --- THEME & ANIMATIONS --- */
+        :root {
+            --hyundai-blue: #002c5f;
+            --hyundai-light: #f4f7f6;
+            --success-green: #27ae60;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--hyundai-light);
+            color: #333;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fade-in { animation: fadeIn 0.6s ease-in-out; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(-15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* --- LOGIN CARD --- */
+        .login-card {
+            background: white; 
+            padding: 40px; 
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            width: 350px; 
+            text-align: center;
+            border-top: 5px solid var(--hyundai-blue);
+        }
+        .login-card h2 { 
+            color: var(--hyundai-blue); 
+            margin-bottom: 5px; 
+        }
+        .subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* --- FORM ELEMENTS --- */
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--hyundai-blue);
+        }
+        .input-field, select {
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc;
+            border-radius: 4px; 
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        select { cursor: pointer; }
+        
+        .btn-primary {
+            width: 100%; 
+            padding: 12px; 
+            background-color: var(--hyundai-blue);
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer;
+            font-weight: bold; 
+            font-size: 16px;
+            transition: background 0.3s, transform 0.1s;
+            margin-top: 10px;
+        }
+        .btn-primary:hover { background-color: #001f44; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        #error-message {
+            color: red; 
+            font-size: 14px; 
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 20px; /* Keeps layout from shifting */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card fade-in">
+        <h2>Hyundai Internal System</h2>
+        <div class="subtitle">Select your department and log in</div>
+
+        <form id="master-login-form">
+            
+            <div class="input-group">
+                <label for="department">Department / Role</label>
+                <select id="department" required>
+                    <option value="" disabled selected>-- Select your role --</option>
+                    <option value="support">Customer Support (Complaints)</option>
+                    <option value="marketing">Marketing (Promotions)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="input-field" placeholder="Enter username" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="input-field" placeholder="Enter password" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Secure Login</button>
+            <div id="error-message"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('master-login-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop the page from reloading
+            
+            // Get the values the user typed in
+            const dept = document.getElementById('department').value;
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const errorEl = document.getElementById('error-message');
+
+            // Reset error message
+            errorEl.textContent = "";
+
+            // 1. Check if they selected Customer Support
+            if (dept === "support") {
+                if (user === "admin" && pass === "password123") {
+                    // Redirect to the complaints dashboard
+                    window.location.href = "index.html"; 
+                } else {
+                    errorEl.textContent = "Invalid Support Credentials.";
+                }
+            } 
+            
+            // 2. Check if they selected Marketing
+            else if (dept === "marketing") {
+                if (user === "marketing" && pass === "promo123") {
+                    // Redirect to the promotion portal
+                    window.location.href = "promo-portal.html"; 
+                } else {
+                    errorEl.textContent = "Invalid Marketing Credentials.";
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

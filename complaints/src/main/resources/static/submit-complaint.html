@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit a Complaint - Phone Shop</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="customer-page">
+    <div class="customer-container">
+        
+        <header class="customer-header">
+            <h1>Customer Support</h1>
+            <p>We are sorry you are experiencing an issue. Let us know how we can help.</p>
+        </header>
+
+        <main class="main-content">
+            <section class="form-section card">
+                <h2>Submit a Complaint</h2>
+                <form id="customerComplaintForm" novalidate>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Full Name</label>
+                            <input type="text" id="customerName" placeholder="John Doe">
+                            <small class="error-msg" id="nameError"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEmail">Email Address</label>
+                            <input type="email" id="customerEmail" placeholder="john@example.com">
+                            <small class="error-msg" id="emailError"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="orderNumber">Order Number (Optional)</label>
+                            <input type="text" id="orderNumber" placeholder="e.g. ORD-12345">
+                        </div>
+                        <div class="form-group">
+                            <label for="issueType">Type of Issue</label>
+                            <select id="issueType">
+                                <option value="">-- Select an Issue --</option>
+                                <option value="Delivery Delay">Delivery Delay</option>
+                                <option value="Damaged Item">Damaged Item</option>
+                                <option value="Wrong Item">Wrong Item</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <small class="error-msg" id="issueTypeError"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="complaintDescription">Description of the Problem</label>
+                            <textarea id="complaintDescription" rows="5" placeholder="Please provide at least 15 characters of detail..."></textarea>
+                            <small class="error-msg" id="descError"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group button-group">
+                            <button type="submit" class="submit-btn theme-blue">Submit Complaint</button>
+                        </div>
+                    </div>
+                    
+                    <div id="successMessage" class="success-alert" style="display: none;">
+                        ✅ Your complaint has been submitted successfully. Our support team will contact you shortly!
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="customer-complaint.js"></script>
+</body>
+</html>
