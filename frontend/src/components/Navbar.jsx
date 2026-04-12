@@ -19,8 +19,9 @@ const Navbar = ({ cartCount }) => {
             <div className="nav-links">
                 <span onClick={() => navigate('/')}>Home</span>
 
-                <div className="cart-icon-wrapper" onClick={() => navigate('/cart')}>
-                    🛒 Cart ({cartCount})
+                <div className="-icon-wrappercart" onClick={() => navigate('/cart')}>
+                    <span className="cart-emoji">🛒</span>
+                    <span className="cart-text">Cart ({cartCount})</span>
                 </div>
             </div>
         </nav>
