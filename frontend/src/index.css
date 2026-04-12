@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap');
+
+/* COLOR THEME */
+:root {
+    --diamond: #ffffff;
+    --silver: #f4f7fb;
+    --icy-lake: #e9f1fb;
+    --golden: #3b82f6;   /* blue accent */
+    --sapphire: #0f2747; /* dark blue */
+    --black-tie: #111827;
+
+    --primary-dark: var(--sapphire);
+    --secondary-dark: var(--icy-lake);
+    --accent: var(--golden);
+    --light-bg: var(--diamond);
+    --shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--silver);
+    color: var(--black-tie);
+    line-height: 1.6;
+}
+
+/* HEADINGS */
+h1, h2, h3, .logo {
+    font-family: 'Playfair Display', serif;
+}
+
+/* LINKS */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* BUTTONS */
+button {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+/* MAIN APP CONTAINER */
+.app-container {
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    padding: 20px 8%;
+}
+
+/* SMOOTH UI */
+html {
+    scroll-behavior: smooth;
+}

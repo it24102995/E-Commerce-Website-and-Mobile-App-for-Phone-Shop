@@ -1,0 +1,48 @@
+.sidebar {
+    width: 200px;
+
+    background-color: var(--sapphire);
+    border-right: 1px solid var(--golden);
+    padding: 40px 20px;
+    height: calc(100vh - 80px);
+    position: sticky;
+    top: 80px;
+}
+
+.sidebar h3 {
+    color: var(--golden);
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    border-left: 4px solid var(--golden);
+    padding-left: 10px;
+}
+
+.sidebar li {
+    padding: 12px 0;
+    color: var(--diamond);
+    cursor: pointer;
+    transition: 0.3s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.95rem;
+}
+
+.sidebar li:hover {
+    color: var(--golden);
+    padding-left: 10px;
+}
+
+.sidebar li:hover {
+    color: var(--golden);
+    padding-left: 5px;
+}
+
+.promo-box {
+    margin-top: 40px;
+    background: var(--sapphire);
+    color: white;
+    padding: 20px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-align: center;
+    border: 1px solid var(--golden);
+}
