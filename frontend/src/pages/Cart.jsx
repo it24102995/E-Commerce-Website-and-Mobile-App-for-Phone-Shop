@@ -1,57 +1,135 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Cart.css';
 
-const Cart = ({ cartItems, fetchCart }) => {
+const Cart = ({
+    cartItems,
+    favoriteIds,
+    toggleFavorite,
+    updateQuantity,
+    removeItem,
+    setSelectedCheckoutItems
+}) => {
     const navigate = useNavigate();
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [toastMessage, setToastMessage] = useState('');
 
-    const removeItem = async (id) => {
-        try {
-            const res = await fetch(`http://localhost:8081/api/cart/${id}`, {
-                method: 'DELETE'
-            });
+    const showToast = (message) => {
+        setToastMessage(message);
+        setTimeout(() => {
+            setToastMessage('');
+        }, 1800);
+    };
 
-            if (!res.ok) {
-                throw new Error('Failed to delete item');
-            }
+    const handleToggleFavorite = (id) => {
+        const alreadyFavorite = favoriteIds.includes(id);
+        toggleFavorite(id);
 
-            await fetchCart();
-        } catch (error) {
-            console.error('Remove item error:', error);
-            alert('Failed to remove item');
+        if (!alreadyFavorite) {
+            showToast('You added this to favourite');
         }
     };
 
-    const subtotal = cartItems.reduce(
+    const toggleSelectItem = (id) => {
+        setSelectedIds((prev) =>
+            prev.includes(id)
+                ? prev.filter((itemId) => itemId !== id)
+                : [...prev, id]
+        );
+    };
+
+    const selectedItems = cartItems.filter((item) => selectedIds.includes(item.id));
+
+    const subtotal = selectedItems.reduce(
         (acc, item) => acc + (item.price * item.quantity),
         0
     );
 
+    const deliveryFee = selectedItems.length > 0 ? 2500 : 0;
+    const grandTotal = subtotal + deliveryFee;
+
+    const handleCheckoutSelected = () => {
+        if (selectedItems.length === 0) {
+            alert('Please select at least one item');
+            return;
+        }
+
+        setSelectedCheckoutItems(selectedItems);
+        navigate('/checkout');
+    };
+
     return (
         <div className="cart-layout">
+            {toastMessage && <div className="toast-message">{toastMessage}</div>}
+
             <div className="cart-items-section">
-                <h2 className="section-title">Your Selection</h2>
+                <h2 className="section-title">Your Cart</h2>
 
                 {cartItems.length > 0 ? (
-                    cartItems.map(item => (
-                        <div key={item.id} className="cart-item-card">
-                            <img src={item.img} alt={item.name} />
-                            <div className="cart-item-info">
-                                <h4>{item.name}</h4>
-                                <p>Rs. {item.price.toLocaleString()}</p>
-                                <p>Qty: {item.quantity}</p>
+                    <>
+                        {cartItems.map(item => (
+                            <div key={item.id} className="cart-item-card">
+                                <div className="select-box">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedIds.includes(item.id)}
+                                        onChange={() => toggleSelectItem(item.id)}
+                                    />
+                                </div>
+
+                                <img src={item.img} alt={item.name} />
+
+                                <div className="cart-item-info">
+                                    <div className="cart-item-top">
+                                        <h4>{item.name}</h4>
+
+                                        <button
+                                            className={`favorite-btn ${favoriteIds.includes(item.id) ? 'active' : ''}`}
+                                            onClick={() => handleToggleFavorite(item.id)}
+                                        >
+                                            ♥
+                                        </button>
+                                    </div>
+
+                                    <p className="item-price">Rs. {item.price.toLocaleString()}</p>
+
+                                    <div className="quantity-row">
+                                        <button
+                                            className="qty-btn"
+                                            onClick={() => updateQuantity(item, item.quantity - 1)}
+                                        >
+                                            -
+                                        </button>
+
+                                        <span className="qty-value">{item.quantity}</span>
+
+                                        <button
+                                            className="qty-btn"
+                                            onClick={() => updateQuantity(item, item.quantity + 1)}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button
+                                    className="delete-btn"
+                                    onClick={() => removeItem(item.id)}
+                                >
+                                    Remove
+                                </button>
                             </div>
-                            <button
-                                className="remove-btn"
-                                onClick={() => removeItem(item.id)}
-                            >
-                                ✕
+                        ))}
+
+                        <div className="cart-actions-row">
+                            <button className="continue-btn" onClick={() => navigate('/')}>
+                                Continue Shopping
                             </button>
                         </div>
-                    ))
+                    </>
                 ) : (
                     <div className="empty-cart-msg">
-                        <p>Your selection is empty.</p>
+                        <p>Your cart is empty.</p>
                         <button className="gold-btn" onClick={() => navigate('/')}>
                             Return to Shop
                         </button>
@@ -60,21 +138,34 @@ const Cart = ({ cartItems, fetchCart }) => {
             </div>
 
             <div className="summary-card">
-                <h3>Order Summary</h3>
+                <h3>Selected Items Summary</h3>
+
                 <div className="summary-row">
-                    <span>Items</span>
-                    <span>{cartItems.length}</span>
+                    <span>Selected Items</span>
+                    <span>{selectedItems.length}</span>
                 </div>
-                <div className="summary-row grand-total">
-                    <span>Total</span>
+
+                <div className="summary-row">
+                    <span>Subtotal</span>
                     <span>Rs. {subtotal.toLocaleString()}</span>
                 </div>
+
+                <div className="summary-row">
+                    <span>Delivery</span>
+                    <span>Rs. {deliveryFee.toLocaleString()}</span>
+                </div>
+
+                <div className="summary-row grand-total">
+                    <span>Total</span>
+                    <span>Rs. {grandTotal.toLocaleString()}</span>
+                </div>
+
                 <button
                     className="checkout-btn"
-                    onClick={() => navigate('/checkout')}
-                    disabled={cartItems.length === 0}
+                    onClick={handleCheckoutSelected}
+                    disabled={selectedItems.length === 0}
                 >
-                    PROCEED TO CHECKOUT
+                    BUY NOW SELECTED
                 </button>
             </div>
         </div>
