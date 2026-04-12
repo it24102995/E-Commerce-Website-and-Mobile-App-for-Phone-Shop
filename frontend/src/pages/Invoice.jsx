@@ -2,11 +2,25 @@ import React from 'react';
 import './Invoice.css';
 
 const Invoice = ({ cartItems, paymentInfo }) => {
+    const items = paymentInfo?.items || cartItems || [];
+
+    const subtotal =
+        paymentInfo?.subtotal ??
+        items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    const deliveryFee =
+        paymentInfo?.deliveryFee ??
+        (items.length > 0 ? 2500 : 0);
+
     const total =
-        paymentInfo?.amount ||
-        cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+        paymentInfo?.amount ??
+        (subtotal + deliveryFee);
 
     const currentDate = paymentInfo?.paidAt || new Date().toLocaleString();
+
+    const mapQuery = encodeURIComponent(
+        `${paymentInfo?.address || ''} ${paymentInfo?.city || ''} ${paymentInfo?.country || ''}`.trim()
+    );
 
     return (
         <div className="invoice-container">
@@ -64,6 +78,16 @@ const Invoice = ({ cartItems, paymentInfo }) => {
                         {paymentInfo?.city ? ', ' : ''}
                         {paymentInfo?.country || ''}
                     </p>
+
+                    {(paymentInfo?.address || paymentInfo?.city || paymentInfo?.country) && (
+                        <iframe
+                            title="Delivery Location Map"
+                            className="invoice-map"
+                            loading="lazy"
+                            allowFullScreen
+                            src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}
+                        ></iframe>
+                    )}
                 </div>
 
                 <table className="invoice-table">
@@ -75,8 +99,8 @@ const Invoice = ({ cartItems, paymentInfo }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {cartItems.map(item => (
-                            <tr key={item.id}>
+                        {items.map((item, index) => (
+                            <tr key={item.id || `${item.name}-${index}`}>
                                 <td>{item.name}</td>
                                 <td style={{ textAlign: 'center' }}>{item.quantity}</td>
                                 <td style={{ textAlign: 'right' }}>
@@ -87,8 +111,21 @@ const Invoice = ({ cartItems, paymentInfo }) => {
                     </tbody>
                 </table>
 
-                <div className="invoice-total">
-                    <h3>Total Amount: Rs. {total.toLocaleString()}</h3>
+                <div className="invoice-summary-box">
+                    <div className="invoice-summary-row">
+                        <span>Subtotal</span>
+                        <strong>Rs. {subtotal.toLocaleString()}</strong>
+                    </div>
+
+                    <div className="invoice-summary-row">
+                        <span>Delivery Fee</span>
+                        <strong>Rs. {deliveryFee.toLocaleString()}</strong>
+                    </div>
+
+                    <div className="invoice-summary-row total">
+                        <span>Total Amount</span>
+                        <strong>Rs. {total.toLocaleString()}</strong>
+                    </div>
                 </div>
 
                 <div className="invoice-footer">
