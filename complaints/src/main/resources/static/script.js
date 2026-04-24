@@ -485,25 +485,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadAndShowPopup() {
     try {
-        // Fetch all promotions from your backend
         const response = await fetch('http://localhost:8080/api/promotions');
         const promotions = await response.json();
-        
-        // Find the first one that is currently ACTIVE
         const activePromo = promotions.find(p => p.active === true);
 
         if (activePromo) {
-            // Update the HTML with the database values!
             document.getElementById('popup-discount-text').textContent = `${activePromo.discountPercentage}% OFF`;
             document.getElementById('popup-promo-code').textContent = activePromo.promoCode;
             
-            // Show the modal with a smooth fade-in
+            // ==========================================
+            // NEW TIMER LOGIC
+            // ==========================================
+            // Get the time from the database (e.g., activePromo.timeLimitInSeconds)
+            // If the admin didn't set a time, default to 5 minutes (300 seconds)
+            const timeLimit = activePromo.timeLimitInSeconds || 300; 
+            
+            // Start the ticking clock!
+            startCountdown(timeLimit);
+            // ==========================================
+
             const modalOverlay = document.getElementById('promo-modal-overlay');
             modalOverlay.classList.remove('hidden');
-            // Slight delay to allow CSS transition to trigger
             setTimeout(() => modalOverlay.classList.add('show'), 10); 
         }
     } catch (error) {
         console.error("No active promotions found or database offline.");
     }
+}
+// A global variable to hold the timer so we can stop it later
+let countdownInterval; 
+
+function startCountdown(totalSeconds) {
+    let timer = totalSeconds;
+    const timerDisplay = document.getElementById('promo-timer-display');
+
+    // Clear any existing timers so they don't overlap
+    clearInterval(countdownInterval);
+
+    // setInterval runs the code inside it every 1000 milliseconds (1 second)
+    countdownInterval = setInterval(() => {
+        // Calculate minutes and seconds
+        let minutes = parseInt(timer / 60, 10);
+        let seconds = parseInt(timer % 60, 10);
+
+        // Add a "0" in front of single digits (e.g., "05" instead of "5")
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        // Update the HTML
+        timerDisplay.textContent = minutes + ":" + seconds;
+
+        // Subtract 1 second. If it hits less than 0, the timer is done!
+        if (--timer < 0) {
+            clearInterval(countdownInterval); // Stop the clock
+            timerDisplay.textContent = "EXPIRED";
+            
+            // Optional: Automatically close the popup when time runs out!
+            document.getElementById('promo-modal-overlay').classList.remove('show');
+            setTimeout(() => document.getElementById('promo-modal-overlay').classList.add('hidden'), 400);
+        }
+    }, 1000);
 }
