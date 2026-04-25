@@ -31,14 +31,23 @@ public class PaymentService {
     @Transactional
     public PaymentResponse processPayment(PaymentRequest request) {
         double total;
-        if (request.getItemIds() != null && !request.getItemIds().isEmpty()) {
+        
+        // Priority 1: Use amount from request if provided
+        if (request.getAmount() > 0) {
+            total = request.getAmount();
+        } 
+        // Priority 2: Calculate from item IDs
+        else if (request.getItemIds() != null && !request.getItemIds().isEmpty()) {
             total = cartService.getSelectedItemsTotal(request.getItemIds());
-        } else {
+        } 
+        // Priority 3: Use full cart total
+        else {
             total = cartService.getCartTotal();
         }
 
         if (total <= 0) {
-            return new PaymentResponse(null, "FAILED", 0, "Amount is 0 or items not found");
+            System.err.println("PAYMENT FAILED: Calculated total is 0. Request Amount: " + request.getAmount() + ", ItemCount: " + (request.getItemIds() != null ? request.getItemIds().size() : 0));
+            return new PaymentResponse(null, "FAILED", 0, "Amount is 0 or items not found. Please try again.");
         }
 
         Payment payment = new Payment();
@@ -58,44 +67,60 @@ public class PaymentService {
         payment.setStatus("PAID");
         payment.setPaymentDate(LocalDateTime.now());
 
-        Payment savedPayment = paymentRepository.save(payment);
+        try {
+            Payment savedPayment = paymentRepository.save(payment);
+            System.out.println("Payment saved successfully: " + savedPayment.getId());
 
-        // --- Create Tracking Orders ---
-        List<com.ECommerce.ECommerce.model.CartItem> itemsToConvert;
-        if (request.getItemIds() != null && !request.getItemIds().isEmpty()) {
-            itemsToConvert = cartItemRepository.findAllById(request.getItemIds());
-        } else {
-            itemsToConvert = cartItemRepository.findAll();
-        }
-
-        for (com.ECommerce.ECommerce.model.CartItem item : itemsToConvert) {
-            com.ECommerce.ECommerce.model.Order order = new com.ECommerce.ECommerce.model.Order();
-            order.setProductName(item.getName());
-            order.setProductPrice(item.getPrice());
-            order.setProductImage(item.getImage());
-            order.setQuantity(item.getQuantity());
-            order.setCustomerName(request.getFullName());
-            order.setCustomerEmail(request.getEmail());
-            order.setShippingAddress(request.getAddress() + ", " + request.getCity() + ", " + request.getCountry());
-            order.setOrderDate(LocalDateTime.now());
-            order.setStatus("PAID");
-            order.setPaymentStatus("PAID"); // Required by database constraint
-            orderRepository.save(order);
-        }
-
-        if (request.getItemIds() != null && !request.getItemIds().isEmpty()) {
-            for (Long id : request.getItemIds()) {
-                cartService.deleteItem(id);
+            // --- Create Tracking Orders ---
+            List<com.ECommerce.ECommerce.model.CartItem> itemsToConvert;
+            if (request.getItemIds() != null && !request.getItemIds().isEmpty()) {
+                itemsToConvert = cartItemRepository.findAllById(request.getItemIds());
+            } else {
+                itemsToConvert = cartItemRepository.findAll();
             }
-        } else {
-            cartService.clearCart();
-        }
 
-        return new PaymentResponse(
-                savedPayment.getId(),
-                savedPayment.getStatus(),
-                savedPayment.getAmount(),
-                "Payment successful"
-        );
+            for (com.ECommerce.ECommerce.model.CartItem item : itemsToConvert) {
+                com.ECommerce.ECommerce.model.Order order = new com.ECommerce.ECommerce.model.Order();
+                order.setProductName(item.getName());
+                order.setProductPrice(item.getPrice());
+                order.setProductImage(item.getImage());
+                order.setQuantity(item.getQuantity() > 0 ? item.getQuantity() : 1);
+                order.setCustomerName(request.getFullName());
+                order.setCustomerEmail(request.getEmail());
+                order.setShippingAddress(request.getAddress() + ", " + request.getCity() + ", " + request.getCountry());
+                order.setOrderDate(LocalDateTime.now());
+                order.setStatus("PAID");
+                order.setPaymentStatus("PAID");
+                
+                if (request.getUserId() != null) {
+                    com.ECommerce.ECommerce.model.User user = new com.ECommerce.ECommerce.model.User();
+                    user.setId(request.getUserId());
+                    order.setUser(user);
+                }
+
+                // user_id and product_id are now nullable in DB
+                orderRepository.save(order);
+                System.out.println("Order created for product: " + item.getName());
+            }
+
+            if (request.getItemIds() != null && !request.getItemIds().isEmpty()) {
+                for (Long id : request.getItemIds()) {
+                    cartService.deleteItem(id);
+                }
+            } else {
+                cartService.clearCart();
+            }
+
+            return new PaymentResponse(
+                    savedPayment.getId(),
+                    savedPayment.getStatus(),
+                    savedPayment.getAmount(),
+                    "Payment successful"
+            );
+        } catch (Exception e) {
+            System.err.println("DATABASE ERROR DURING PAYMENT: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Rethrow to trigger transaction rollback
+        }
     }
 }

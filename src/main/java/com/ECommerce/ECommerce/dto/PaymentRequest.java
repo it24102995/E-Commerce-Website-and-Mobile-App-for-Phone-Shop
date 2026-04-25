@@ -15,8 +15,18 @@ public class PaymentRequest {
     private String expiry;
     private String cvv;
     private java.util.List<Long> itemIds;
+    private double amount;
+    private Long userId;
 
     public PaymentRequest() {
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public java.util.List<Long> getItemIds() {
@@ -121,5 +131,13 @@ public class PaymentRequest {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 }

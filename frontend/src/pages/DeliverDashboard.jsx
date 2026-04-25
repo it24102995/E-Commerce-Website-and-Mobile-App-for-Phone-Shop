@@ -73,6 +73,7 @@ const DeliverDashboard = () => {
                                         <div>
                                             <p className="order-id">Order #{order.orderId}</p>
                                             <p className="customer-name">{order.customerName}</p>
+                                            <p className="order-amount" style={{fontWeight: 'bold', color: '#2d5cf7', marginTop: '4px'}}>Total: LKR {(order.totalAmount || 0).toLocaleString()}</p>
                                         </div>
                                         <button 
                                             onClick={() => handleAccept(order.orderId)}
@@ -100,6 +101,7 @@ const DeliverDashboard = () => {
                                         <div>
                                             <p className="order-id" style={{color: 'var(--golden)'}}>Order #{order.orderId}</p>
                                             <p className="customer-name">{order.customerName}</p>
+                                            <p className="order-amount" style={{fontWeight: 'bold', color: 'var(--golden)', marginTop: '4px'}}>Total: LKR {(order.totalAmount || 0).toLocaleString()}</p>
                                         </div>
                                         <button 
                                             onClick={() => navigate(`/rider-view/${order.orderId}`)}

@@ -12,6 +12,7 @@ import DeliverSignup from './pages/DeliverSignup';
 import DeliverDashboard from './pages/DeliverDashboard';
 import RiderView from './pages/RiderView';
 import CustomerTrackingView from './pages/CustomerTrackingView';
+import CustomerOrders from './pages/CustomerOrders';
 import './index.css';
 
 function App() {
@@ -128,6 +129,7 @@ function App() {
                     <Route path="/deliver-dashboard" element={<DeliverDashboard />} />
                     <Route path="/rider-view/:orderId" element={<RiderView />} />
                     <Route path="/track-order/:orderId" element={<CustomerTrackingView />} />
+                    <Route path="/my-orders" element={<CustomerOrders />} />
                 </Routes>
             </div>
         </Router>

@@ -39,11 +39,19 @@ CREATE TABLE IF NOT EXISTS products (
 -- Orders table
 CREATE TABLE IF NOT EXISTS orders (
     id             BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_id        BIGINT      NOT NULL,
-    product_id     BIGINT      NOT NULL,
+    user_id        BIGINT      NULL,
+    product_id     BIGINT      NULL,
+    product_name   VARCHAR(255),
+    product_price  DOUBLE,
+    product_image  LONGTEXT,
+    customer_name  VARCHAR(255),
+    customer_email VARCHAR(255),
+    shipping_address TEXT,
     quantity       INT         NOT NULL,
     payment_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    status         VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     order_date     DATETIME    NOT NULL,
+    rider_id       BIGINT      NULL,
     CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_orders_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -76,7 +84,7 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 -- Seed default admin
-INSERT INTO admin (username, password) VALUES ('admin@mobileshop.com', 'admin123')
+INSERT INTO admin (username, password) VALUES ('admin@hyundai.com', 'admin123')
 ON DUPLICATE KEY UPDATE password = VALUES(password);
 
 -- Seed products (name, price LKR, stock, image, discount%, is_new_arrival)

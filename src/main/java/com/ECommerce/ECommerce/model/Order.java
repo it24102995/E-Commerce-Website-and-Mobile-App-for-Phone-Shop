@@ -44,7 +44,7 @@ public class Order {
     @Column(name = "payment_status", nullable = false)
     private String paymentStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rider_id")
     private Rider rider;
 

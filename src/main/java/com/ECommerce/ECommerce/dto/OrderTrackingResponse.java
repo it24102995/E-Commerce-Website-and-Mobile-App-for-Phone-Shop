@@ -14,6 +14,9 @@ public class OrderTrackingResponse {
     private String shippingAddress;
     private String billingAddress;
     private String status;
+    private double totalAmount;
+    private Long riderId;
+    private String riderName;
     private List<ProductItemDTO> productList;
 
     @Data

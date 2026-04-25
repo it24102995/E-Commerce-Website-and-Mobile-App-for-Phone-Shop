@@ -218,6 +218,9 @@ const CheckoutForm = ({ cartItems, setPaymentInfo, fetchCart }) => {
                 deliveryFee
             });
 
+            const user = JSON.parse(localStorage.getItem('ms_user') || '{}');
+            const currentUserId = user.userId || user.id || null;
+
             await recordPaymentOnBackend({
                 fullName: codForm.fullName,
                 customerName: codForm.fullName,
@@ -228,7 +231,9 @@ const CheckoutForm = ({ cartItems, setPaymentInfo, fetchCart }) => {
                 phoneNumber: codForm.phoneNumber,
                 paymentId: 'COD-' + Date.now(),
                 itemIds: cartItems.map(i => i.id),
-                paymentMethod: 'Cash on Delivery'
+                paymentMethod: 'Cash on Delivery',
+                amount: grandTotal,
+                userId: currentUserId
             });
 
             if (fetchCart) await fetchCart();
@@ -299,6 +304,9 @@ const CheckoutForm = ({ cartItems, setPaymentInfo, fetchCart }) => {
                         deliveryFee
                     });
 
+                    const user = JSON.parse(localStorage.getItem('ms_user') || '{}');
+                    const currentUserId = user.userId || user.id || null;
+
                     await recordPaymentOnBackend({
                         fullName: cardForm.cardholderName,
                         customerName: cardForm.cardholderName,
@@ -310,7 +318,9 @@ const CheckoutForm = ({ cartItems, setPaymentInfo, fetchCart }) => {
                         paymentId: result.paymentIntent.id,
                         cardNumber: '**** **** **** ' + result.paymentIntent.id.substring(result.paymentIntent.id.length - 4),
                         itemIds: cartItems.map(i => i.id),
-                        paymentMethod: 'Card Payment'
+                        paymentMethod: 'Card Payment',
+                        amount: grandTotal,
+                        userId: currentUserId
                     });
 
                     if (fetchCart) await fetchCart();

@@ -77,6 +77,9 @@ public class TrackingService {
                 .shippingAddress(order.getShippingAddress() != null ? order.getShippingAddress() : "No Address Provided")
                 .billingAddress(order.getShippingAddress() != null ? order.getShippingAddress() : "No Address Provided")
                 .status(order.getStatus())
+                .totalAmount(order.getProductPrice() > 0 ? order.getProductPrice() * order.getQuantity() : (order.getProduct() != null ? order.getProduct().getPrice() * order.getQuantity() : 0.0))
+                .riderId(order.getRider() != null ? order.getRider().getId() : null)
+                .riderName(order.getRider() != null ? order.getRider().getName() : null)
                 .productList(Collections.singletonList(
                         OrderTrackingResponse.ProductItemDTO.builder()
                                 .model(order.getProductName() != null ? order.getProductName() : (order.getProduct() != null ? order.getProduct().getName() : "Unknown Product"))
