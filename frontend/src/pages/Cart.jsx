@@ -45,7 +45,7 @@ const Cart = ({
         0
     );
 
-    const deliveryFee = selectedItems.length > 0 ? 2500 : 0;
+    const deliveryFee = 0;
     const grandTotal = subtotal + deliveryFee;
 
     const handleCheckoutSelected = () => {
@@ -77,7 +77,7 @@ const Cart = ({
                                     />
                                 </div>
 
-                                <img src={item.img} alt={item.name} />
+                                <img src={item.image} alt={item.name} />
 
                                 <div className="cart-item-info">
                                     <div className="cart-item-top">
@@ -122,7 +122,7 @@ const Cart = ({
                         ))}
 
                         <div className="cart-actions-row">
-                            <button className="continue-btn" onClick={() => navigate('/')}>
+                            <button className="continue-btn" onClick={() => window.location.href = 'index.html#products'}>
                                 Continue Shopping
                             </button>
                         </div>
@@ -130,7 +130,7 @@ const Cart = ({
                 ) : (
                     <div className="empty-cart-msg">
                         <p>Your cart is empty.</p>
-                        <button className="gold-btn" onClick={() => navigate('/')}>
+                        <button className="gold-btn" onClick={() => window.location.href = 'index.html#products'}>
                             Return to Shop
                         </button>
                     </div>

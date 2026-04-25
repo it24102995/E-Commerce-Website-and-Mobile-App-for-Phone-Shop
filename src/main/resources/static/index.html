@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HYUNDAI PREMIER - Home</title>
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/responsive.css?v=20260328a" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/no-overlay.css?v=20260327c" />
+</head>
+
+<body class="products-page">
+
+    <!-- Background orbs -->
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-orb bg-orb-4"></div>
+    <div class="bg-orb bg-orb-5"></div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html" class="hp-logo" aria-label="Hyundai Premier Home">
+                <img src="images/WhatsApp Image 2026-03-25 at 15.58.56.jpeg" alt="Hyundai Premier logo"
+                    class="hp-logo-img" />
+                <span class="hp-logo-title">HYUNDAI PREMIER</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="active"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="shop.html#/cart"><i class="fa-solid fa-cart-shopping"></i> Cart <span id="cartBadge"
+                    class="badge">0</span></a>
+            <a href="orders.html"><i class="fa-solid fa-box"></i> My Orders</a>
+            <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+            <span id="authButtons">
+                <a href="login.html" class="btn-nav">Login</a>
+                <a href="register.html" class="btn-nav btn-outline">Register</a>
+            </span>
+            <span id="userGreeting" style="display:none">
+                <span class="greeting-text"></span>
+                <a href="customer-complaint.html"><i class="fa-solid fa-headset"></i> Complaint</a>
+                <a href="#" onclick="logout()" class="btn-nav btn-outline">Logout</a>
+            </span>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <!-- LEFT: Text column -->
+        <div class="hero-content">
+            <div class="hero-badge"><i class="fa-solid fa-bolt"></i> New Arrivals 2026</div>
+            <h1>Find Your Perfect<br><span class="text-accent">Mobile Phone</span></h1>
+            <p>Premium smartphones from Apple, Samsung, Google &amp; more — delivered free to your door across Sri
+                Lanka.</p>
+            <div class="hero-actions">
+                <a href="#products" class="btn-primary hero-cta"><i class="fa-solid fa-mobile-screen-button"></i> Shop
+                    Now</a>
+                <a href="about.html" class="btn-ghost hero-ghost"><i class="fa-solid fa-circle-info"></i> About Us</a>
+            </div>
+        </div>
+
+        <!-- LEFT: 3D Image -->
+        <div class="hero-phone-col">
+            <div class="hero-showcase-frame">
+                <img class="hero-showcase-img" src="images/mobile-accessories-shop.jpg"
+                    alt="Mobile accessories showcase"
+                    onerror="this.style.display='none'; this.parentElement.classList.add('hero-showcase-fallback'); this.parentElement.innerHTML='<span>Add image at static/images/mobile-accessories-shop.jpg</span>';" />
+            </div>
+        </div>
+
+        <!-- BOTTOM: Stats row -->
+        <div class="hero-stats">
+            <div class="stat"><strong id="totalCount">0</strong><span>Products</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><strong>Free</strong><span>Island Delivery</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><strong>100%</strong><span>Genuine</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><strong>24/7</strong><span>Support</span></div>
+        </div>
+    </section>
+
+    <!-- FEATURES STRIP -->
+    <section class="features-strip">
+        <div class="features-grid">
+            <div class="feature-card" style="animation-delay:.05s">
+                <div class="feature-icon fi-purple"><i class="fa-solid fa-truck-fast"></i></div>
+                <div class="feature-text">
+                    <h4>Free Delivery</h4>
+                    <p>Island-wide, 1–3 days</p>
+                </div>
+            </div>
+            <div class="feature-card" style="animation-delay:.1s">
+                <div class="feature-icon fi-green"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="feature-text">
+                    <h4>100% Genuine</h4>
+                    <p>Official warranty included</p>
+                </div>
+            </div>
+            <div class="feature-card" style="animation-delay:.15s">
+                <div class="feature-icon fi-amber"><i class="fa-solid fa-rotate-left"></i></div>
+                <div class="feature-text">
+                    <h4>Easy Returns</h4>
+                    <p>7-day hassle-free returns</p>
+                </div>
+            </div>
+            <div class="feature-card" style="animation-delay:.2s">
+                <div class="feature-icon fi-pink"><i class="fa-solid fa-headset"></i></div>
+                <div class="feature-text">
+                    <h4>24/7 Support</h4>
+                    <p>Always here to help</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BRANDS STRIP -->
+    <section class="brands-strip">
+        <h3>Top Brands Available</h3>
+        <div class="brands-row">
+            <div class="brand-pill"><i class="fa-brands fa-apple"></i> Apple</div>
+            <div class="brand-pill"><i class="fa-solid fa-s"></i> Samsung</div>
+            <div class="brand-pill"><i class="fa-brands fa-google"></i> Google</div>
+            <div class="brand-pill"><i class="fa-solid fa-plus"></i> OnePlus</div>
+            <div class="brand-pill"><i class="fa-solid fa-x"></i> Xiaomi</div>
+            <div class="brand-pill"><i class="fa-solid fa-s"></i> Sony</div>
+            <div class="brand-pill"><i class="fa-solid fa-m"></i> Motorola</div>
+        </div>
+    </section>
+
+
+
+    <!-- SEARCH & FILTER -->
+    <section class="search-section" id="products">
+        <div class="search-wrap">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search phones by brand or model..."
+                    oninput="filterProducts()" />
+            </div>
+            <div class="sort-wrap">
+                <label class="sort-label" for="sortSelect"><i class="fa-solid fa-arrow-down-wide-short"></i> Sort
+                    by</label>
+                <select id="sortSelect" onchange="filterProducts()">
+                    <option value="">Choose order</option>
+                    <option value="price-asc">Price: Low → High</option>
+                    <option value="price-desc">Price: High → Low</option>
+                    <option value="name">Name A–Z</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section class="products-section">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-solid fa-layer-group"></i> All Products</h2>
+            <span id="resultCount" class="result-count"></span>
+        </div>
+        <div class="product-grid" id="productGrid">
+            <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading products…</div>
+        </div>
+    </section>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- ══ REVIEW MODAL ══════════════════════════════════════════════════════════════════ -->
+    <div id="reviewModal" class="modal-overlay" style="display:none" onclick="closeReviewModal(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-star"></i> Customer Reviews</h3>
+                <button class="modal-close" onclick="closeReviewModalDirect()"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="reviewProductName" class="review-product-name"></div>
+
+            <div class="star-input-wrap">
+                <span class="star-label">Your Rating:</span>
+                <span id="starInput">
+                    <span class="star-btn" data-v="1" onclick="setReviewStar(1)">&#9733;</span>
+                    <span class="star-btn" data-v="2" onclick="setReviewStar(2)">&#9733;</span>
+                    <span class="star-btn" data-v="3" onclick="setReviewStar(3)">&#9733;</span>
+                    <span class="star-btn" data-v="4" onclick="setReviewStar(4)">&#9733;</span>
+                    <span class="star-btn" data-v="5" onclick="setReviewStar(5)">&#9733;</span>
+                </span>
+            </div>
+            <span id="reviewRatingHint" class="review-rating-hint" style="padding:0 1.6rem .4rem;display:none">Please
+                select a star rating</span>
+
+            <div class="review-form-body">
+                <textarea id="reviewComment" placeholder="Share your experience with this product…" rows="3"></textarea>
+                <button class="btn-primary btn-full" onclick="submitReview()">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Review
+                </button>
+            </div>
+
+            <div id="reviewsList"></div>
+        </div>
+    </div>
+
+    <!-- ═══ NEWSLETTER ════════════════════════════════════════════════════════════════════════════ -->
+    <section class="newsletter-section">
+        <div class="nl-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+        <h2>Sign up for Newsletter</h2>
+        <p>...and receive offers and updates straight to your inbox</p>
+        <form class="nl-form" onsubmit="nlSubscribe(event)">
+            <div class="nl-input-wrap">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="nlEmail" placeholder="Enter your email address" required autocomplete="email" />
+                <button type="submit">Subscribe <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </form>
+        <p class="nl-trust"><i class="fa-solid fa-lock"></i> We respect your privacy. No spam, ever.</p>
+    </section>
+
+    <!-- ═══ SITE FOOTER — LIFE MOBILE ══════════════════════════════════════════════════════ -->
+    <footer class="site-footer">
+        <div class="sf-top">
+            <div class="sf-brand">
+                <div class="sf-logo"><i class="fa-solid fa-mobile-screen-button"></i> Life Mobile</div>
+                <p class="sf-tagline">Got any Queries? Call Us!</p>
+                <div class="sf-phones">
+                    <a href="tel:0112322511"><i class="fa-solid fa-phone"></i> 011 2322511</a>
+                    <a href="tel:0777060616"><i class="fa-solid fa-phone"></i> 077 7060616</a>
+                    <a href="tel:0775577115"><i class="fa-solid fa-phone"></i> 077 55 77 115</a>
+                </div>
+            </div>
+            <div class="sf-col">
+                <h4><i class="fa-solid fa-compass"></i> Go to</h4>
+                <ul>
+                    <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+                    <li><a href="about.html"><i class="fa-solid fa-circle-info"></i> About</a></li>
+                    <li><a href="#"><i class="fa-solid fa-tags"></i> Top 10 Offers</a></li>
+                    <li><a href="#products"><i class="fa-solid fa-fire-flame-curved"></i> New Arrivals</a></li>
+                    <li><a href="#"><i class="fa-solid fa-bolt"></i> Value of the Day</a></li>
+                    <li><a href="#"><i class="fa-solid fa-box-open"></i> Bundle Packs</a></li>
+                    <li><a href="#"><i class="fa-solid fa-heart"></i> Wishlist</a></li>
+                    <li><a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a></li>
+                </ul>
+            </div>
+            <div class="sf-col">
+                <h4><i class="fa-solid fa-circle-question"></i> What is Koko?</h4>
+                <p class="sf-koko-desc">Koko is a Buy Now, Pay Later service — split your purchase into easy monthly
+                    instalments with zero interest.</p>
+                <h4 style="margin-top:1.2rem"><i class="fa-solid fa-headset"></i> Customer Care</h4>
+                <ul>
+                    <li><a href="#"><i class="fa-solid fa-user-circle"></i> My Account</a></li>
+                    <li><a href="orders.html"><i class="fa-solid fa-truck"></i> Track your Order</a></li>
+                    <li><a href="#"><i class="fa-solid fa-circle-question"></i> FAQs</a></li>
+                    <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a></li>
+                    <li><a href="#"><i class="fa-solid fa-file-contract"></i> Terms &amp; Conditions</a></li>
+                    <li><a href="#"><i class="fa-solid fa-rotate-left"></i> Exchanges &amp; Refunds</a></li>
+                    <li><a href="#"><i class="fa-solid fa-certificate"></i> Warranty</a></li>
+                </ul>
+            </div>
+            <div class="sf-col">
+                <h4><i class="fa-solid fa-store"></i> Store Directory</h4>
+                <p class="sf-text-sm">Find a Life Mobile store near you across Sri Lanka.</p>
+                <h4 style="margin-top:1.2rem"><i class="fa-solid fa-credit-card"></i> Online Payments</h4>
+                <div class="sf-pay-icons">
+                    <span class="sf-pay-icon"><i class="fa-brands fa-cc-visa"></i></span>
+                    <span class="sf-pay-icon"><i class="fa-brands fa-cc-mastercard"></i></span>
+                    <span class="sf-pay-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+                </div>
+                <h4 style="margin-top:1.2rem"><i class="fa-solid fa-calendar-days"></i> Instalment Plans</h4>
+                <p class="sf-text-sm">0% EMI via Sampath, HNB, Commercial Bank &amp; more.</p>
+                <h4 style="margin-top:1.2rem"><i class="fa-solid fa-share-nodes"></i> Follow Us</h4>
+                <div class="sf-socials">
+                    <a href="#" class="sf-social-btn fb" aria-label="Facebook"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="sf-social-btn ig" aria-label="Instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="sf-social-btn yt" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="sf-social-btn wa" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+                <a href="#" class="sf-google-review"><i class="fa-brands fa-google"></i> LifeMobileGoogleReview</a>
+            </div>
+        </div>
+        <div class="sf-bottom">
+            <p>&copy; 2026 Life Mobile Lanka (Pvt) Ltd. All Rights Reserved. Fueled By <span
+                    class="sf-fueled">TecRocket</span> <i class="fa-solid fa-rocket"></i></p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        initNavbar();
+        let allProducts = [];
+
+        loadProducts().then(products => {
+            allProducts = products;
+            document.getElementById('totalCount').textContent = products.length;
+            renderProducts(products);
+            renderOffersBelt(products);
+            setTimeout(apply3DTilt, 400);
+        });
+
+        function filterProducts() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const sort = document.getElementById('sortSelect').value;
+            let list = allProducts.filter(p => p.name.toLowerCase().includes(q));
+
+            if (sort === 'price-asc') list.sort((a, b) => a.price - b.price);
+            if (sort === 'price-desc') list.sort((a, b) => b.price - a.price);
+            if (sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+
+            document.getElementById('resultCount').textContent =
+                q || sort ? `${list.length} result${list.length !== 1 ? 's' : ''}` : '';
+
+            renderProducts(list);
+            setTimeout(apply3DTilt, 400);
+        }
+
+        /* ── 3-D card tilt on mouse-move ─────────────────── */
+        function apply3DTilt() {
+            document.querySelectorAll('.products-page .product-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const r = card.getBoundingClientRect();
+                    const x = e.clientX - r.left;
+                    const y = e.clientY - r.top;
+                    const cx = r.width / 2;
+                    const cy = r.height / 2;
+                    const rX = ((y - cy) / cy) * -14;
+                    const rY = ((x - cx) / cx) * 14;
+                    card.style.transform = `perspective(900px) rotateX(${rX}deg) rotateY(${rY}deg) translateZ(14px)`;
+                    card.style.boxShadow = `
+                    ${-rY * 2}px ${rX * 2}px 50px rgba(108,99,255,.5),
+                    0 24px 60px rgba(0,0,0,.55),
+                    inset 0 1px 0 rgba(255,255,255,.12)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+                    card.style.boxShadow = '';
+                });
+            });
+        }
+
+        /* ── Phone screen live clock ───────────────────────── */
+        (function phoneClockTick() {
+            const timeEl = document.getElementById('screenTime');
+            const dateEl = document.getElementById('screenDate');
+            if (!timeEl || !dateEl) return;
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            function tick() {
+                const now = new Date();
+                const h = now.getHours().toString().padStart(2, '0');
+                const m = now.getMinutes().toString().padStart(2, '0');
+                timeEl.textContent = h + ':' + m;
+                dateEl.textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
+            }
+            tick(); setInterval(tick, 10000);
+        })();
+
+        /* ── Rising particles ────────────────────────────── */
+        (function createParticles() {
+            const wrap = document.createElement('div');
+            wrap.className = 'particles-container';
+            document.body.appendChild(wrap);
+            for (let i = 0; i < 36; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 3 + 1;
+                p.style.cssText = `
+                left: ${Math.random() * 100}%;
+                width: ${size}px; height: ${size}px;
+                animation-duration: ${Math.random() * 12 + 8}s;
+                animation-delay: ${-(Math.random() * 18)}s;
+                opacity: ${Math.random() * .55 + .15};`;
+                wrap.appendChild(p);
+            }
+        })();
+
+        /* ── Offers Belt (DB-driven with images) ─────────────────── */
+        function renderOffersBelt(products) {
+            const belt = document.getElementById('offersBelt');
+            if (!belt) return;
+            const offerProds = products.filter(p => Number(p.discount) > 0 || p.isNewArrival);
+            if (!offerProds.length) return;
+            function pillCls(d) { return d >= 20 ? 'deal' : d >= 10 ? 'hot' : d > 0 ? 'emi' : 'new'; }
+            const pills = offerProds.map(p => {
+                const d = Number(p.discount) || 0;
+                const sp = d > 0 ? Math.round(p.price * (1 - d / 100)) : p.price;
+                const lbl = d > 0 ? `-${d}% OFF` : 'NEW';
+                const img = escHtml(p.image || 'https://placehold.co/40x40?text=📱');
+                const nm = escHtml(p.name);
+                return `<span class="na-offer-pill ${pillCls(d)}">` +
+                    `<img src="${img}" alt="${nm}" class="offer-pill-img" onerror="this.src='https://placehold.co/40x40?text=📱'">` +
+                    `<span class="offer-pill-text"><strong>${nm}</strong>` +
+                    `<span>LKR ${sp.toLocaleString()} · ${lbl}</span></span></span>`;
+            }).join('');
+            belt.innerHTML = pills + pills;
+            belt.style.animationDuration = Math.max(16, offerProds.length * 3) + 's';
+        }
+
+        /* Newsletter */
+        function nlSubscribe(e) {
+            e.preventDefault();
+            var email = document.getElementById('nlEmail').value.trim();
+            if (!email) return;
+            showToastGlobal('🎉 Subscribed! Exclusive offers coming your way.', 'success');
+            document.getElementById('nlEmail').value = '';
+        }
+
+        // ==========================================
+        // PROMOTION MODAL LOGIC (Trigger on Page Load)
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // If you want it to show only once per session, uncomment the line below:
+            // if (!sessionStorage.getItem('promoShown')) {
+            // Trigger the popup after a small delay to let the page load
+            setTimeout(loadAndShowPopup, 1500);
+            // Mark as shown for this session
+            // sessionStorage.setItem('promoShown', 'true');
+            // }
+
+            // Setup Close Button
+            const closeBtn = document.getElementById('close-promo-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    document.getElementById('promo-modal-overlay').classList.remove('show');
+                    setTimeout(() => document.getElementById('promo-modal-overlay').style.display = 'none', 400);
+                });
+            }
+
+            // Setup Copy Button
+            const copyBtn = document.getElementById('copy-code-btn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                    const code = document.getElementById('popup-promo-code').textContent;
+                    navigator.clipboard.writeText(code).then(() => {
+                        copyBtn.textContent = "Copied!";
+                        copyBtn.style.backgroundColor = "#27ae60"; // Turn green
+                        setTimeout(() => {
+                            copyBtn.textContent = "Copy Code";
+                            copyBtn.style.backgroundColor = "#f39c12"; // Revert to orange
+                        }, 2000);
+                    }).catch(err => {
+                        console.error("Failed to copy code: ", err);
+                    });
+                });
+            }
+        });
+
+        async function loadAndShowPopup() {
+            try {
+                // Fetch promotions from our backend
+                const response = await fetch('http://localhost:8081/api/promotions');
+                if (!response.ok) return;
+
+                const promotions = await response.json();
+                // Find all active promotions
+                const activePromos = promotions.filter(p => p.active === true);
+
+                if (activePromos.length > 0) {
+                    // Pick a random active promotion
+                    const activePromo = activePromos[Math.floor(Math.random() * activePromos.length)];
+
+                    document.getElementById('popup-discount-text').textContent = `${activePromo.discountPercentage}% OFF`;
+                    document.getElementById('popup-promo-code').textContent = activePromo.promoCode;
+
+                    // Get the time from the database (or default to 5 minutes)
+                    const timeLimit = activePromo.timeLimitInSeconds || 300;
+
+                    // Start the ticking clock
+                    startCountdown(timeLimit);
+
+                    // Show the modal
+                    const modalOverlay = document.getElementById('promo-modal-overlay');
+                    modalOverlay.style.display = 'flex';
+                    // Trigger animation
+                    setTimeout(() => modalOverlay.classList.add('show'), 10);
+                }
+            } catch (error) {
+                console.error("Error loading promotions:", error);
+            }
+        }
+
+        let countdownInterval;
+        function startCountdown(totalSeconds) {
+            let timer = totalSeconds;
+            const timerDisplay = document.getElementById('promo-timer-display');
+
+            // Clear any existing timers so they don't overlap
+            clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                let minutes = parseInt(timer / 60, 10);
+                let seconds = parseInt(timer % 60, 10);
+
+                // Add a "0" in front of single digits
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                // Update the HTML
+                if (timerDisplay) {
+                    timerDisplay.textContent = minutes + ":" + seconds;
+                }
+
+                // Subtract 1 second. If it hits less than 0, the timer is done!
+                if (--timer < 0) {
+                    clearInterval(countdownInterval); // Stop the clock
+                    if (timerDisplay) timerDisplay.textContent = "EXPIRED";
+
+                    // Automatically close the popup when time runs out
+                    const modalOverlay = document.getElementById('promo-modal-overlay');
+                    if (modalOverlay) {
+                        modalOverlay.classList.remove('show');
+                        setTimeout(() => modalOverlay.style.display = 'none', 400);
+                    }
+                }
+            }, 1000);
+        }
+    </script>
+
+    <!-- PROMOTION MODAL OVERLAY -->
+    <div id="promo-modal-overlay" class="promo-modal-overlay" style="display: none;">
+        <div class="promo-modal-content">
+            <button id="close-promo-btn" class="close-promo-btn">&times;</button>
+            <h2 id="popup-discount-text" class="promo-discount-title">21% OFF</h2>
+            <p class="promo-subtitle">WHEN YOU BUY NOW</p>
+
+            <div class="promo-code-box">
+                <span id="popup-promo-code">MUAADH123</span>
+            </div>
+
+            <p class="promo-timer-text">
+                Offer expires in: <span id="promo-timer-display" class="promo-timer">00:00</span>
+            </p>
+
+            <p class="promo-copy-hint">COPY CODE FOR USE AT CHECKOUT</p>
+            <button id="copy-code-btn" class="promo-copy-btn">Copy Code</button>
+        </div>
+    </div>
+
+    <style>
+        /* Promotion Modal Styles */
+        .promo-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.85);
+            /* Dark blueish premium overlay */
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .promo-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .promo-modal-content {
+            background: #ffffff;
+            width: 90%;
+            max-width: 450px;
+            padding: 40px 30px;
+            border-radius: 4px;
+            /* Slightly square like a ticket */
+            text-align: center;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: translateY(-20px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .promo-modal-overlay.show .promo-modal-content {
+            transform: translateY(0);
+        }
+
+        .close-promo-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            line-height: 1;
+        }
+
+        .close-promo-btn:hover {
+            color: #0f172a;
+        }
+
+        .promo-discount-title {
+            color: #0b2d5c;
+            /* Deep navy blue */
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -1px;
+        }
+
+        .promo-subtitle {
+            color: #64748b;
+            font-size: 0.85rem;
+            letter-spacing: 2.5px;
+            margin: 0 0 25px 0;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .promo-code-box {
+            background-color: #0b2d5c;
+            color: #ffffff;
+            padding: 18px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .promo-timer-text {
+            color: #475569;
+            font-size: 1rem;
+            margin: 0 0 15px 0;
+            font-weight: 500;
+        }
+
+        .promo-timer {
+            color: #e11d48;
+            /* Red for urgency */
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .promo-copy-hint {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 15px 0;
+        }
+
+        .promo-copy-btn {
+            background-color: #f59e0b;
+            /* Vibrant amber/orange */
+            color: #ffffff;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .promo-copy-btn:hover {
+            background-color: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .promo-copy-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</body>
+
+</html>

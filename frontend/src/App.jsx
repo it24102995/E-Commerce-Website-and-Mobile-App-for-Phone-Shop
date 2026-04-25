@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Product from './pages/Product';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Invoice from './pages/Invoice';
+import PaymentHistory from './pages/PaymentHistory';
+import AdminSidebar from './components/AdminSidebar';
+import DeliverLogin from './pages/DeliverLogin';
+import DeliverSignup from './pages/DeliverSignup';
+import DeliverDashboard from './pages/DeliverDashboard';
+import RiderView from './pages/RiderView';
+import CustomerTrackingView from './pages/CustomerTrackingView';
 import './index.css';
 
 function App() {
@@ -77,13 +83,16 @@ function App() {
         fetchCart();
     }, []);
 
+    const isPaymentHistory = window.location.hash.includes('/payment-history');
+
     return (
         <Router>
-            <Navbar cartCount={cart.length} />
+            {!isPaymentHistory && <Navbar cartCount={cart.length} />}
 
-            <div className="app-container">
+            <div className={isPaymentHistory ? "admin-app-container" : "app-container"}>
+                {isPaymentHistory && <AdminSidebar activePage="payments" />}
                 <Routes>
-                    <Route path="/" element={<Product fetchCart={fetchCart} />} />
+                    <Route path="/" element={<Navigate to="/shop.html" replace />} />
                     <Route path="/product/:slug" element={<ProductDetails fetchCart={fetchCart} />} />
                     <Route
                         path="/cart"
@@ -105,6 +114,7 @@ function App() {
                             <Checkout
                                 cartItems={selectedCheckoutItems.length > 0 ? selectedCheckoutItems : cart}
                                 setPaymentInfo={setPaymentInfo}
+                                fetchCart={fetchCart}
                             />
                         }
                     />
@@ -112,6 +122,12 @@ function App() {
                         path="/invoice"
                         element={<Invoice cartItems={selectedCheckoutItems.length > 0 ? selectedCheckoutItems : cart} paymentInfo={paymentInfo} />}
                     />
+                    <Route path="/payment-history" element={<PaymentHistory />} />
+                    <Route path="/deliver-login" element={<DeliverLogin />} />
+                    <Route path="/deliver-signup" element={<DeliverSignup />} />
+                    <Route path="/deliver-dashboard" element={<DeliverDashboard />} />
+                    <Route path="/rider-view/:orderId" element={<RiderView />} />
+                    <Route path="/track-order/:orderId" element={<CustomerTrackingView />} />
                 </Routes>
             </div>
         </Router>

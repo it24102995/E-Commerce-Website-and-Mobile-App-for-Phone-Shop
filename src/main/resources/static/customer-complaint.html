@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Complaint Portal - Hyundai Premier</title>
+    <link rel="stylesheet" href="css/complaint.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom Portal Overrides */
+        body {
+            display: block !important;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), 
+                              url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=2000'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .page-container { width: 100%; min-height: 100vh; }
+        .nav-item { cursor: pointer; }
+        .hidden { display: none !important; }
+        
+        /* Table Styles from Admin */
+        #complaints-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); }
+        #complaints-table th { background: #f8fbff; padding: 15px; text-align: left; font-size: 13px; color: var(--sapphire); font-weight: 700; border-bottom: 2px solid #eee; }
+        #complaints-table td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; color: #444; }
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge.pending { background: #fff3cd; color: #856404; }
+        .badge.progress { background: #cfe2ff; color: #0a58ca; }
+        .badge.resolved { background: #d1fae5; color: #065f46; }
+        .ticket-id { font-family: monospace; font-weight: 700; color: var(--sapphire); }
+
+        .not-logged-banner { text-align: center; padding: 50px; background: white; border-radius: 16px; box-shadow: var(--shadow); max-width: 500px; margin: 100px auto; }
+        .not-logged-banner i { font-size: 50px; color: var(--sapphire); margin-bottom: 20px; }
+        .login-btn-portal { display: inline-block; padding: 12px 30px; background: var(--sapphire); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div id="portal-container" class="page-container">
+    <div class="dashboard-wrapper">
+        
+        <!-- SIDEBAR (Matches Admin) -->
+        <aside class="sidebar slide-right">
+            <div class="profile">
+                <div class="profile-pic">
+                    <img id="user-avatar" src="https://ui-avatars.com/api/?name=User&background=0a5858&color=fff" alt="User">
+                </div>
+                <div class="profile-info">
+                    <p class="staff-title" id="display-name">Customer Name</p>
+                    <p class="staff-role" id="display-email">Customer Portal</p>
+                </div>
+            </div>
+            <nav class="side-nav">
+                <a class="nav-item active" data-target="dashboard-section"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a class="nav-item" data-target="submit-section"><i class="fas fa-plus-circle"></i> Submit Complaint</a>
+                <a class="nav-item" data-target="all-complaints-section" onclick="loadMyComplaints('ALL')"><i class="fas fa-list-ul"></i> My Complaints</a>
+                <a class="nav-item" data-target="all-complaints-section" onclick="loadMyComplaints('SOLVED')"><i class="fas fa-check-circle"></i> Solved Complaints</a>
+                <a href="index.html" class="nav-item"><i class="fas fa-home"></i> Back to Home</a>
+            </nav>
+        </aside>
+        
+        <!-- CONTENT AREA -->
+        <main class="content-area fade-in">
+            <header class="main-header">
+                <div class="header-titles">
+                    <h1 id="dynamic-title">Dashboard</h1>
+                    <p id="dynamic-subtitle">Overview of your complaints and status</p>
+                </div>
+                <div class="header-actions">
+                    <button class="live-updates-btn" onclick="fetchMyComplaints()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                </div>
+            </header>
+            
+            <div id="main-content-panels">
+
+                <!-- DASHBOARD SECTION (Stats Cards) -->
+                <section id="dashboard-section" class="panel-section active">
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <p class="stat-label">My Total Complaints</p>
+                            <h2 class="stat-value" id="stat-total">0</h2>
+                            <i class="stat-icon info-icon fas fa-info-circle"></i>
+                        </div>
+                        <div class="stat-card yellow">
+                            <p class="stat-label">Pending</p>
+                            <h2 class="stat-value" id="stat-pending">0</h2>
+                            <i class="stat-icon pending-icon fas fa-clock"></i>
+                        </div>
+                        <div class="stat-card blue">
+                            <p class="stat-label">In Progress</p>
+                            <h2 class="stat-value" id="stat-progress">0</h2>
+                            <i class="stat-icon progress-icon fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="stat-card green">
+                            <p class="stat-label">Solved</p>
+                            <h2 class="stat-value" id="stat-solved">0</h2>
+                            <i class="stat-icon resolved-icon fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-section">
+                        <div class="chart-container-large slide-up">
+                            <h3>My Complaints Status</h3>
+                            <canvas id="myStatusChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- COMPLAINTS TABLE SECTION -->
+                <section id="all-complaints-section" class="panel-section hidden">
+                    <div class="workable-grid-container slide-up">
+                        <table id="complaints-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Assigned Staff</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="complaints-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- SUBMIT FORM SECTION (Matches Admin) -->
+                <section id="submit-section" class="panel-section hidden">
+                    <div class="form-card slide-up">
+                        <h2>Submit New Complaint</h2>
+                        <p class="form-sub">Register a new issue and we'll help you soon</p>
+                        
+                        <form id="new-complaint-form">
+                            <div class="form-section-title">Customer Information</div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="full_name">Full Name *</label>
+                                    <input type="text" id="full_name" required readonly>
+                                </div>
+                                <div class="input-col">
+                                    <label for="email">Email *</label>
+                                    <input type="email" id="email" required readonly>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="phone_number">Phone Number *</label>
+                                    <input type="text" id="phone_number" placeholder="+94 77 123 4567" required>
+                                </div>
+                                <div class="input-col">
+                                    <label for="order_id">Order ID *</label>
+                                    <input type="text" id="order_id" placeholder="ORD-2024-1234" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section-title">Product Information</div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="product_name">Product Name (Phone Model) *</label>
+                                    <select id="product_name" required>
+                                        <option value="" disabled selected>Select a phone model...</option>
+                                        <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
+                                        <option value="Samsung Galaxy S24 Ultra">Samsung Galaxy S24 Ultra</option>
+                                        <option value="Google Pixel 8 Pro">Google Pixel 8 Pro</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="input-col">
+                                    <label for="h_tracking_number">H Code *</label>
+                                    <input type="text" id="h_tracking_number" placeholder="Enter H code" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section-title">Complaint Details</div>
+                            <div class="form-row">
+                                <div class="input-col">
+                                    <label for="category">Category *</label>
+                                    <select id="category" required>
+                                        <option value="Defective Product">Defective Product</option>
+                                        <option value="Delivery Issue">Delivery Issue</option>
+                                        <option value="Warranty Claim">Warranty Claim</option>
+                                        <option value="Refund Request">Refund Request</option>
+                                    </select>
+                                </div>
+                                <div class="input-col">
+                                    <label for="priority">Priority *</label>
+                                    <select id="priority">
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="Low">Low</option>
+                                        <option value="High">High</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row full">
+                                <div class="input-col">
+                                    <label for="description">Detailed Description *</label>
+                                    <textarea id="description" placeholder="Describe the issue in detail..." required></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="submit-btn form-submit" id="submitBtn">Submit My Complaint</button>
+                            
+                            <div id="success-alert" class="success-alert" style="display:none; margin-top:20px;">
+                                <i class="fas fa-check-circle"></i> Complaint submitted successfully! Ticket ID: <span id="ticket-id-display"></span>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Auth Guard -->
+<div id="auth-guard" style="display:none;">
+    <div class="not-logged-banner">
+        <i class="fas fa-lock"></i>
+        <h2>Login Required</h2>
+        <p>Please log in to view your complaints.</p>
+        <a href="login.html" class="login-btn-portal">Login Now</a>
+    </div>
+</div>
+
+<script>
+    let myComplaints = [];
+    let statusChart = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        setupNavigation();
+        fetchMyComplaints();
+    });
+
+    function checkAuth() {
+        const user = JSON.parse(localStorage.getItem('ms_user'));
+        if (!user) {
+            document.getElementById('portal-container').style.display = 'none';
+            document.getElementById('auth-guard').style.display = 'block';
+            return;
+        }
+        document.getElementById('display-name').textContent = user.name || user.username;
+        document.getElementById('display-email').textContent = user.email;
+        document.getElementById('full_name').value = user.name || user.username;
+        document.getElementById('email').value = user.email;
+        document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=0a5858&color=fff`;
+    }
+
+    function setupNavigation() {
+        const navItems = document.querySelectorAll('.nav-item[data-target]');
+        const sections = document.querySelectorAll('.panel-section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                sections.forEach(sec => sec.classList.add('hidden'));
+                
+                item.classList.add('active');
+                const target = item.getAttribute('data-target');
+                document.getElementById(target).classList.remove('hidden');
+                document.getElementById('dynamic-title').textContent = item.innerText;
+            });
+        });
+
+        document.getElementById('new-complaint-form').addEventListener('submit', handleSubmit);
+    }
+
+    async function fetchMyComplaints() {
+        const user = JSON.parse(localStorage.getItem('ms_user'));
+        if (!user) return;
+
+        try {
+            const response = await fetch('/api/complaints');
+            const allData = await response.json();
+            // Filter only this user's complaints
+            myComplaints = allData.filter(c => c.email === user.email);
+            
+            updateStats();
+            renderTable(myComplaints);
+            updateChart();
+        } catch (err) {
+            console.error("Error fetching complaints:", err);
+        }
+    }
+
+    function updateStats() {
+        document.getElementById('stat-total').innerText = myComplaints.length;
+        document.getElementById('stat-pending').innerText = myComplaints.filter(c => c.status === 'PENDING').length;
+        document.getElementById('stat-progress').innerText = myComplaints.filter(c => c.status === 'IN_PROGRESS').length;
+        document.getElementById('stat-solved').innerText = myComplaints.filter(c => (c.status === 'RESOLVED' || c.status === 'SOLVED')).length;
+    }
+
+    function loadMyComplaints(type) {
+        if (type === 'SOLVED') {
+            const solved = myComplaints.filter(c => (c.status === 'RESOLVED' || c.status === 'SOLVED'));
+            renderTable(solved);
+        } else {
+            renderTable(myComplaints);
+        }
+    }
+
+    function renderTable(data) {
+        const tbody = document.getElementById('complaints-table-body');
+        tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No complaints found.</td></tr>';
+            return;
+        }
+
+        data.forEach(c => {
+            const row = tbody.insertRow();
+            const statusClass = c.status === 'RESOLVED' || c.status === 'SOLVED' ? 'resolved' : (c.status === 'IN_PROGRESS' ? 'progress' : 'pending');
+            
+            row.innerHTML = `
+                <td><span class="ticket-id">${c.ticketId}</span></td>
+                <td>${c.productName}</td>
+                <td>${c.category}</td>
+                <td>${c.priority}</td>
+                <td><span class="badge ${statusClass}">${c.status}</span></td>
+                <td>${c.assignedStaff || 'Unassigned'}</td>
+                <td>${new Date(c.createdAt).toLocaleDateString()}</td>
+            `;
+        });
+    }
+
+    function updateChart() {
+        const ctx = document.getElementById('myStatusChart').getContext('2d');
+        const stats = {
+            Pending: myComplaints.filter(c => c.status === 'PENDING').length,
+            InProgress: myComplaints.filter(c => c.status === 'IN_PROGRESS').length,
+            Solved: myComplaints.filter(c => (c.status === 'RESOLVED' || c.status === 'SOLVED')).length
+        };
+
+        if (statusChart) statusChart.destroy();
+
+        statusChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'In Progress', 'Solved'],
+                datasets: [{
+                    label: 'Complaint Count',
+                    data: [stats.Pending, stats.InProgress, stats.Solved],
+                    backgroundColor: ['#f1c40f', '#3498db', '#2ecc71']
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        });
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = 'Submitting...';
+
+        const data = {
+            customerName: document.getElementById('full_name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone_number').value,
+            orderId: document.getElementById('order_id').value,
+            productName: document.getElementById('product_name').value,
+            hTrackingNumber: document.getElementById('h_tracking_number').value,
+            category: document.getElementById('category').value,
+            priority: document.getElementById('priority').value,
+            description: document.getElementById('description').value,
+            status: 'PENDING',
+            severity: 'Medium',
+            assignedStaff: 'Unassigned'
+        };
+
+        try {
+            const res = await fetch('/api/complaints', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                const result = await res.json();
+                document.getElementById('ticket-id-display').innerText = result.ticketId;
+                document.getElementById('success-alert').style.display = 'block';
+                document.getElementById('new-complaint-form').reset();
+                fetchMyComplaints();
+                setTimeout(() => document.getElementById('success-alert').style.display = 'none', 5000);
+            }
+        } catch (err) {
+            alert("Error submitting complaint");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Submit My Complaint';
+        }
+    }
+</script>
+</body>
+</html>

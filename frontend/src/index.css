@@ -56,6 +56,12 @@ button {
     padding: 20px 8%;
 }
 
+/* ADMIN APP CONTAINER */
+.admin-app-container {
+    width: 100%;
+    min-height: 100vh;
+}
+
 /* SMOOTH UI */
 html {
     scroll-behavior: smooth;

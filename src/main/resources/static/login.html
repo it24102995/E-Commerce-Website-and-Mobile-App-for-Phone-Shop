@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Welcome Back – Sign In</title>
+    <link rel="stylesheet" href="css/responsive.css?v=20260328a"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+    <style>
+        :root {
+            --primary: #2b60f5;
+            --primary-hover: #1e4bd8;
+            --bg-color: #f8f9fc;
+            --text-dark: #111827;
+            --text-muted: #6b7280;
+            --input-bg: #f3f6fa;
+            --input-border: #e5e7eb;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: white;
+            width: 100%;
+            max-width: 440px;
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            text-align: center;
+        }
+
+        .top-icon-wrap {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+            background: rgba(43, 96, 245, 0.08);
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .login-card h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .login-card .subtitle {
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .role-tabs {
+            display: flex;
+            background: transparent;
+            margin-bottom: 2rem;
+            gap: 0.5rem;
+        }
+
+        .role-tabs button {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid transparent;
+            background: transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .role-tabs button.active {
+            background: white;
+            color: var(--primary);
+            border-color: #eef2f6;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        
+        .role-tabs button:hover:not(.active) {
+            background: var(--input-bg);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+        }
+
+        .form-group label i {
+            margin-right: 0.4rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--input-bg);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text-dark);
+        }
+
+        .input-wrapper input:focus {
+            border-color: rgba(43, 96, 245, 0.3);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(43, 96, 245, 0.1);
+        }
+
+        .input-wrapper .eye-icon {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 12px rgba(43, 96, 245, 0.2);
+        }
+
+        .card-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .card-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .error-msg {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            border: 1px solid #fecaca;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="top-icon-wrap">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+    </div>
+    
+    <div id="loginTitle">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to your account</p>
+    </div>
+
+    <!-- Role Switcher -->
+    <div class="role-tabs">
+        <button class="active" id="tab-user" onclick="switchTab('user')">
+            <i class="fa-solid fa-user"></i> Customer
+        </button>
+        <button id="tab-rider" onclick="switchTab('rider')">
+            <i class="fa-solid fa-motorcycle"></i> Rider
+        </button>
+        <button id="tab-admin" onclick="switchTab('admin')">
+            <i class="fa-solid fa-shield-halved"></i> Admin
+        </button>
+    </div>
+
+    <div id="loginError" class="error-msg"></div>
+
+    <form id="loginForm" onsubmit="handleUnifiedLogin(event)">
+        <input type="hidden" id="selectedRole" value="user">
+        
+        <div class="form-group">
+            <label><i class="fa-solid fa-envelope"></i> Email</label>
+            <div class="input-wrapper">
+                <input type="email" id="email" placeholder="name@example.com" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fa-solid fa-lock"></i> Password</label>
+            <div class="input-wrapper">
+                <input type="password" id="password" placeholder="••••••••" required>
+                <i class="fa-solid fa-eye eye-icon" onclick="togglePassword()" id="togglePasswordIcon"></i>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-login" id="submitBtn">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In</span>
+        </button>
+    </form>
+
+    <div class="card-footer" id="footerLinks">
+        <p>New here? <a href="register.html">Create account</a></p>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    // Redirect if already logged in
+    const existingUser = getUser();
+    if (existingUser) {
+        if (existingUser.role === 'ADMIN') window.location.href = 'admin.html';
+        else window.location.href = 'index.html';
+    }
+
+    function togglePassword() {
+        const passInput = document.getElementById('password');
+        const icon = document.getElementById('togglePasswordIcon');
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    function switchTab(role) {
+        document.querySelectorAll('.role-tabs button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-' + role).classList.add('active');
+        document.getElementById('selectedRole').value = role;
+        
+        const footerLinks = document.getElementById('footerLinks');
+        
+        if (role === 'admin') {
+            footerLinks.style.display = 'none';
+        } else if (role === 'rider') {
+            footerLinks.innerHTML = '<p>Need a rider account? <a href="register.html?role=rider">Register Here</a></p>';
+            footerLinks.style.display = 'block';
+        } else {
+            footerLinks.innerHTML = '<p>New here? <a href="register.html">Create account</a></p>';
+            footerLinks.style.display = 'block';
+        }
+        
+        document.getElementById('loginError').style.display = 'none';
+    }
+
+    async function handleUnifiedLogin(e) {
+        e.preventDefault();
+        const role = document.getElementById('selectedRole').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('loginError');
+        const btn = document.getElementById('submitBtn');
+        
+        errorDiv.style.display = 'none';
+        btn.disabled = true;
+        btn.querySelector('span').textContent = 'Authenticating...';
+
+        try {
+            let url = `${API_BASE}/login`;
+            if (role === 'admin') url = `/api/admin/login`;
+            if (role === 'rider') url = `/api/riders/login`;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(role === 'admin' ? {username: email, password} : {email, password})
+            });
+
+            if (!res.ok) throw new Error('Invalid credentials');
+            const data = await res.json();
+
+            if (role === 'rider') {
+                localStorage.setItem('rider', JSON.stringify(data));
+                saveUser({ userId: data.id, name: data.name, role: 'RIDER', success: true });
+                window.location.href = 'shop.html#/deliver-dashboard';
+            } else if (role === 'admin') {
+                if (data.success) {
+                    saveUser(data);
+                    window.location.href = 'admin.html';
+                } else throw new Error(data.message || 'Admin login failed');
+            } else {
+                if (data.success) {
+                    saveUser(data);
+                    window.location.href = 'index.html';
+                } else throw new Error(data.message || 'Login failed');
+            }
+        } catch (err) {
+            errorDiv.textContent = err.message || 'Login failed. Please check your credentials.';
+            errorDiv.style.display = 'block';
+            btn.disabled = false;
+            btn.querySelector('span').textContent = 'Sign In';
+        }
+    }
+</script>
+</body>
+</html>

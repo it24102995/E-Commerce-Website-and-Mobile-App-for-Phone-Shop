@@ -25,7 +25,7 @@ const cardElementOptions = {
     hidePostalCode: false,
 };
 
-const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
+const CheckoutForm = ({ cartItems, setPaymentInfo, fetchCart }) => {
     const navigate = useNavigate();
     const stripe = useStripe();
     const elements = useElements();
@@ -52,12 +52,60 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
     const [cardError, setCardError] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
+    // Promo Code State
+    const [promoCodeInput, setPromoCodeInput] = useState('');
+    const [appliedDiscount, setAppliedDiscount] = useState(0); // percentage e.g. 21
+    const [appliedPromoCode, setAppliedPromoCode] = useState('');
+    const [promoMessage, setPromoMessage] = useState('');
+    const [promoStatus, setPromoStatus] = useState(''); // 'success' | 'error' | ''
+    const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+
     const subtotal = useMemo(() => {
         return cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     }, [cartItems]);
 
+    const discountAmount = Math.round((subtotal * appliedDiscount) / 100);
     const deliveryFee = cartItems.length > 0 ? 2500 : 0;
-    const grandTotal = subtotal + deliveryFee;
+    const grandTotal = subtotal - discountAmount + deliveryFee;
+
+    const handleApplyPromo = async () => {
+        const code = promoCodeInput.trim().toUpperCase();
+        if (!code) {
+            setPromoMessage('Please enter a promo code.');
+            setPromoStatus('error');
+            return;
+        }
+        setIsApplyingPromo(true);
+        setPromoMessage('');
+        try {
+            const res = await fetch(`http://localhost:8081/api/promotions/validate/${code}`);
+            if (res.ok) {
+                const promo = await res.json();
+                setAppliedDiscount(promo.discountPercentage);
+                setAppliedPromoCode(code);
+                setPromoMessage(`✅ Promo "${code}" applied! You saved Rs. ${Math.round((subtotal * promo.discountPercentage) / 100).toLocaleString()}`);
+                setPromoStatus('success');
+            } else {
+                setAppliedDiscount(0);
+                setAppliedPromoCode('');
+                setPromoMessage('❌ Invalid or inactive promo code.');
+                setPromoStatus('error');
+            }
+        } catch (err) {
+            setPromoMessage('❌ Could not validate promo code. Server may be offline.');
+            setPromoStatus('error');
+        } finally {
+            setIsApplyingPromo(false);
+        }
+    };
+
+    const handleRemovePromo = () => {
+        setAppliedDiscount(0);
+        setAppliedPromoCode('');
+        setPromoCodeInput('');
+        setPromoMessage('');
+        setPromoStatus('');
+    };
 
     const formattedDate = new Date().toLocaleString();
 
@@ -130,6 +178,19 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
         return Object.keys(newErrors).length === 0;
     };
 
+    const recordPaymentOnBackend = async (data) => {
+        try {
+            const res = await fetch('http://localhost:8081/api/payment/process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('Backend failed to process payment');
+        } catch (err) {
+            console.error('Failed to record payment on backend:', err);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -157,6 +218,20 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
                 deliveryFee
             });
 
+            await recordPaymentOnBackend({
+                fullName: codForm.fullName,
+                customerName: codForm.fullName,
+                email: 'cod@customer.com',
+                address: codForm.address,
+                city: codForm.city,
+                country: 'Sri Lanka',
+                phoneNumber: codForm.phoneNumber,
+                paymentId: 'COD-' + Date.now(),
+                itemIds: cartItems.map(i => i.id),
+                paymentMethod: 'Cash on Delivery'
+            });
+
+            if (fetchCart) await fetchCart();
             navigate('/invoice');
             return;
         }
@@ -224,10 +299,26 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
                         deliveryFee
                     });
 
+                    await recordPaymentOnBackend({
+                        fullName: cardForm.cardholderName,
+                        customerName: cardForm.cardholderName,
+                        email: cardForm.email,
+                        address: cardForm.address,
+                        city: cardForm.city,
+                        country: cardForm.country || 'Sri Lanka',
+                        phoneNumber: cardForm.phoneNumber || '0000000000',
+                        paymentId: result.paymentIntent.id,
+                        cardNumber: '**** **** **** ' + result.paymentIntent.id.substring(result.paymentIntent.id.length - 4),
+                        itemIds: cartItems.map(i => i.id),
+                        paymentMethod: 'Card Payment'
+                    });
+
+                    if (fetchCart) await fetchCart();
                     navigate('/invoice');
                 } else {
                     setCardError('Payment was not completed');
                 }
+
             } catch (error) {
                 console.error('Payment error:', error);
                 setCardError(error.message || 'Payment request failed');
@@ -475,6 +566,69 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
                         <strong>Rs. {deliveryFee.toLocaleString()}</strong>
                     </div>
 
+                    {/* Promo Code Input */}
+                    <div style={{ margin: '1rem 0', borderTop: '1px dashed #e5e7eb', paddingTop: '1rem' }}>
+                        <p style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem', color: '#374151' }}>🎟️ Promo Code</p>
+                        {!appliedPromoCode ? (
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Enter promo code"
+                                    value={promoCodeInput}
+                                    onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+                                    style={{
+                                        flex: 1,
+                                        padding: '0.5rem 0.75rem',
+                                        border: '1.5px solid #d1d5db',
+                                        borderRadius: '8px',
+                                        fontSize: '0.9rem',
+                                        fontFamily: 'monospace',
+                                        letterSpacing: '0.05em',
+                                        textTransform: 'uppercase',
+                                        outline: 'none'
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleApplyPromo}
+                                    disabled={isApplyingPromo}
+                                    style={{
+                                        padding: '0.5rem 1rem',
+                                        background: '#6c63ff',
+                                        color: '#fff',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        fontSize: '0.85rem',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    {isApplyingPromo ? '...' : 'Apply'}
+                                </button>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '0.5rem 0.75rem' }}>
+                                <span style={{ fontWeight: 700, color: '#15803d', fontFamily: 'monospace' }}>{appliedPromoCode} &mdash; {appliedDiscount}% OFF</span>
+                                <button type="button" onClick={handleRemovePromo} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 700, fontSize: '1rem' }}>✕</button>
+                            </div>
+                        )}
+                        {promoMessage && (
+                            <p style={{ marginTop: '0.4rem', fontSize: '0.82rem', color: promoStatus === 'success' ? '#15803d' : '#dc2626', fontWeight: 500 }}>
+                                {promoMessage}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Discount line */}
+                    {discountAmount > 0 && (
+                        <div className="checkout-summary-item" style={{ color: '#15803d' }}>
+                            <span>Discount ({appliedDiscount}% OFF)</span>
+                            <strong style={{ color: '#15803d' }}>- Rs. {discountAmount.toLocaleString()}</strong>
+                        </div>
+                    )}
+
                     <div className="checkout-summary-item checkout-total-line">
                         <span>Total</span>
                         <strong>Rs. {grandTotal.toLocaleString()}</strong>
@@ -485,10 +639,10 @@ const CheckoutForm = ({ cartItems, setPaymentInfo }) => {
     );
 };
 
-const Checkout = ({ cartItems, setPaymentInfo }) => {
+const Checkout = ({ cartItems, setPaymentInfo, fetchCart }) => {
     return (
         <Elements stripe={stripePromise}>
-            <CheckoutForm cartItems={cartItems} setPaymentInfo={setPaymentInfo} />
+            <CheckoutForm cartItems={cartItems} setPaymentInfo={setPaymentInfo} fetchCart={fetchCart} />
         </Elements>
     );
 };

@@ -17,12 +17,29 @@ const Navbar = ({ cartCount }) => {
             </div>
 
             <div className="nav-links">
-                <span onClick={() => navigate('/')}>Home</span>
+                {JSON.parse(localStorage.getItem('ms_user'))?.role !== 'RIDER' && (
+                    <span onClick={() => window.location.href = 'index.html#products'}>Home</span>
+                )}
+                {JSON.parse(localStorage.getItem('ms_user'))?.role === 'RIDER' && (
+                    <span onClick={() => navigate('/deliver-dashboard')}>Dashboard</span>
+                )}
+                
+                {(localStorage.getItem('ms_user') || localStorage.getItem('rider')) ? (
+                    <span onClick={() => {
+                        localStorage.removeItem('ms_user');
+                        localStorage.removeItem('rider');
+                        window.location.href = 'index.html';
+                    }} className="login-link">Logout</span>
+                ) : (
+                    <span onClick={() => window.location.href = 'index.html'} className="login-link">Login</span>
+                )}
 
-                <div className="-icon-wrappercart" onClick={() => navigate('/cart')}>
-                    <span className="cart-emoji">🛒</span>
-                    <span className="cart-text">Cart ({cartCount})</span>
-                </div>
+                {(!localStorage.getItem('rider') && JSON.parse(localStorage.getItem('ms_user') || '{}')?.role !== 'RIDER') && (
+                    <div className="-icon-wrappercart" onClick={() => navigate('/cart')}>
+                        <span className="cart-emoji">🛒</span>
+                        <span className="cart-text">Cart ({cartCount})</span>
+                    </div>
+                )}
             </div>
         </nav>
     );

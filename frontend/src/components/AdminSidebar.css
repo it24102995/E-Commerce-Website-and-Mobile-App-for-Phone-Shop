@@ -1,0 +1,224 @@
+/* =====================================================
+   AdminSidebar.css - Exactly matches admin.css sidebar
+   (body.admin-shell-page .navbar styles)
+   ===================================================== */
+
+/* Force Segoe UI font on all sidebar elements
+   (overrides React app's global 'Inter' font) */
+.admin-sidebar,
+.admin-sidebar * {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    box-sizing: border-box;
+}
+
+.admin-sidebar {
+    --sidebar-width: 254px;
+    --sidebar-collapsed-width: 86px;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: #2d5cf7;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.9rem;
+    z-index: 2000;
+    transition: width 0.28s ease;
+    padding: 1rem 0.9rem;
+    border-right: 1px solid rgba(164, 184, 255, 0.28);
+    border-bottom: none;
+    box-shadow: none;
+}
+
+.admin-sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+/* ── Brand Header ──────────────────────── */
+.sidebar-header {
+    font-size: 1.15rem;
+    font-weight: 800;
+    padding: 0.8rem 0.7rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+.sidebar-header i {
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin: 0;
+}
+
+.sidebar-header span {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+/* ── Toggle Button ─────────────────────── */
+.toggle-sidebar-btn-sq {
+    align-self: flex-end;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #f7fbff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    flex-shrink: 0;
+    margin-top: -0.6rem;
+}
+
+.toggle-sidebar-btn-sq:hover {
+    background: rgba(255, 255, 255, 0.16);
+    transform: translateY(-1px);
+}
+
+/* ── Navigation ────────────────────────── */
+.sidebar-nav {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.15rem;
+    flex: 1;
+}
+
+.sidebar-nav a {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.78rem;
+    border-radius: 10px;
+    color: rgba(236, 244, 255, 0.95);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    position: relative;
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-nav a i {
+    font-size: 1.05rem;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900;
+}
+
+/* inactive hover */
+.sidebar-nav a::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 6px;
+    background: #9ec5ff;
+    opacity: 0;
+    transform: scaleY(0.35);
+    transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.sidebar-nav a:hover {
+    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+/* active */
+.sidebar-nav a.active {
+    color: #ffffff;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.10) 100%);
+    box-shadow: inset 3px 0 0 #9ec5ff;
+}
+
+.sidebar-nav a.active::before {
+    opacity: 1;
+    transform: scaleY(1);
+}
+
+/* ── Footer ────────────────────────────── */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Greeting pill - matches .greeting-text in admin.css */
+.admin-email-pill-white {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.72rem 0.78rem;
+    border-radius: 10px;
+    border: 1px dashed rgba(214, 228, 255, 0.45);
+    background: rgba(255, 255, 255, 0.08);
+    color: #e8f2ff;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Logout button - matches .btn-nav in admin.css */
+.logout-btn-navy {
+    width: 100%;
+    padding: 0.72rem 0.78rem;
+    border-radius: 10px;
+    border: 1px solid #2f54bd;
+    background: #17357f;
+    color: #e9f2ff;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+
+.logout-btn-navy:hover {
+    background: #224aa8;
+    color: #ffffff;
+}
+
+/* ── Collapsed State ───────────────────── */
+.admin-sidebar.collapsed .sidebar-header span {
+    display: none;
+}
+
+.admin-sidebar.collapsed .sidebar-nav a {
+    justify-content: center;
+    font-size: 0;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+}
+
+.admin-sidebar.collapsed .sidebar-nav a i {
+    font-size: 1.05rem;
+    margin: 0;
+    width: auto;
+}
+
+.admin-sidebar.collapsed .admin-email-pill-white {
+    display: none !important;
+}

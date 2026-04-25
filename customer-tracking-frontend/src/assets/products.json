@@ -1,0 +1,110 @@
+[
+  {
+    "productId": "69c81bf6dc26a289a2d3afda",
+    "model": "iPhone 15 Pro",
+    "price": 999,
+    "quantity": 0,
+    "stock": 45,
+    "description": "Latest Apple flagship with A17 Pro chip",
+    "image": "https://images.unsplash.com/photo-1592286927505-1fed6b2ac929?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afdb",
+    "model": "Samsung Galaxy S24",
+    "price": 899,
+    "quantity": 0,
+    "stock": 38,
+    "description": "Advanced AI features and 200MP camera",
+    "image": "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afdc",
+    "model": "Google Pixel 8",
+    "price": 799,
+    "quantity": 0,
+    "stock": 52,
+    "description": "AI-powered photography and pure Android",
+    "image": "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afdd",
+    "model": "OnePlus 12",
+    "price": 749,
+    "quantity": 0,
+    "stock": 40,
+    "description": "Fast performance with 120W charging",
+    "image": "https://images.unsplash.com/photo-1511707267537-b85faf00021e?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afde",
+    "model": "Xiaomi 14 Ultra",
+    "price": 679,
+    "quantity": 0,
+    "stock": 55,
+    "description": "Professional camera system with Leica optics",
+    "image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afdf",
+    "model": "Motorola Edge 50 Pro",
+    "price": 599,
+    "quantity": 0,
+    "stock": 35,
+    "description": "Clean Android with premium design",
+    "image": "https://images.unsplash.com/photo-1511454612769-005cc4f1ade4?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afe0",
+    "model": "Sony Xperia 1 V",
+    "price": 1099,
+    "quantity": 0,
+    "stock": 20,
+    "description": "4K OLED display and pro camera features",
+    "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afe1",
+    "model": "Asus ROG Phone 8",
+    "price": 899,
+    "quantity": 0,
+    "stock": 18,
+    "description": "Gaming beast with 165Hz AMOLED display",
+    "image": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afe2",
+    "model": "Realme GT 5 Pro",
+    "price": 599,
+    "quantity": 0,
+    "stock": 30,
+    "description": "Flagship killer with Snapdragon 8 Gen 3",
+    "image": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afe3",
+    "model": "Oppo Find X7 Ultra",
+    "price": 799,
+    "quantity": 0,
+    "stock": 22,
+    "description": "Premium design and Hasselblad camera",
+    "image": "https://images.unsplash.com/photo-1512499617640-c2f999098c67?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afe4",
+    "model": "Vivo X100 Pro",
+    "price": 849,
+    "quantity": 0,
+    "stock": 28,
+    "description": "Impressive Zeiss optics and fast charging",
+    "image": "https://images.unsplash.com/photo-1519121788667-7a7e1e43a6c6?w=400&q=80"
+  },
+  {
+    "productId": "69c81bf6dc26a289a2d3afe5",
+    "model": "Nothing Phone (2)",
+    "price": 699,
+    "quantity": 0,
+    "stock": 25,
+    "description": "Unique transparent design and clean UI",
+    "image": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400&q=80"
+  }
+]

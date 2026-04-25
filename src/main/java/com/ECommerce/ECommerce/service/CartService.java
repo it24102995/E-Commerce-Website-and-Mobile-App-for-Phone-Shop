@@ -40,4 +40,14 @@ public class CartService {
                 .mapToDouble(item -> item.getPrice() * item.getQuantity())
                 .sum();
     }
+
+    public double getSelectedItemsTotal(List<Long> itemIds) {
+        if (itemIds == null || itemIds.isEmpty()) {
+            return 0.0;
+        }
+        return cartItemRepository.findAllById(itemIds)
+                .stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+    }
 }

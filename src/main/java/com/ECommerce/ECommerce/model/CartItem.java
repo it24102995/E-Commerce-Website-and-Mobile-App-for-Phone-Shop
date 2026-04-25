@@ -1,10 +1,9 @@
 package com.ECommerce.ECommerce.model;
 
-
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items_v2")
 public class CartItem {
 
     @Id
@@ -13,7 +12,11 @@ public class CartItem {
 
     private String name;
     private double price;
-    private String img;
+    
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String image;
+    
     private int quantity;
 
     public CartItem() {
@@ -21,6 +24,10 @@ public class CartItem {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -39,12 +46,12 @@ public class CartItem {
         this.price = price;
     }
 
-    public String getImg() {
-        return img;
+    public String getImage() {
+        return image;
     }
 
-    public void setImg(String img) {
-        this.img = img;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public int getQuantity() {

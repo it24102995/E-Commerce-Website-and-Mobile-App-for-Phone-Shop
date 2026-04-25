@@ -14,8 +14,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/payment")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:3000", "http://localhost:8081" })
 public class PaymentController {
+
+    private final com.ECommerce.ECommerce.service.PaymentService paymentService;
+
+    public PaymentController(com.ECommerce.ECommerce.service.PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
@@ -24,10 +30,8 @@ public class PaymentController {
     public ResponseEntity<?> createPaymentIntent(@RequestBody Map<String, Object> payload) {
 
         try {
-            // 🔐 Stripe init
             Stripe.apiKey = stripeSecretKey;
 
-            // 📌 get amount
             Object amountObj = payload.get("amount");
 
             if (amountObj == null) {
@@ -51,16 +55,14 @@ public class PaymentController {
             // if you want rupees:
             // amount = amount * 100;
 
-            PaymentIntentCreateParams params =
-                    PaymentIntentCreateParams.builder()
-                            .setAmount(amount)
-                            .setCurrency("usd") // ⚠️ test mode → usd only safe
-                            .setAutomaticPaymentMethods(
-                                    PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
-                                            .setEnabled(true)
-                                            .build()
-                            )
-                            .build();
+            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                    .setAmount(amount)
+                    .setCurrency("usd") // ⚠️ test mode → usd only safe
+                    .setAutomaticPaymentMethods(
+                            PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                    .setEnabled(true)
+                                    .build())
+                    .build();
 
             PaymentIntent paymentIntent = PaymentIntent.create(params);
 
@@ -73,6 +75,16 @@ public class PaymentController {
         } catch (StripeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Stripe error: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/process")
+    public ResponseEntity<?> processPayment(@RequestBody com.ECommerce.ECommerce.dto.PaymentRequest request) {
+        try {
+            return ResponseEntity.ok(paymentService.processPayment(request));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 }

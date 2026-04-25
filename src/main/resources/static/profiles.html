@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="User Profiles - Responsive Mobile-Friendly Design"/>
+    <title>User Profiles – Admin Panel</title>
+        <link rel="stylesheet" href="css/admin.css?v=20260327b"/>
+    <link rel="stylesheet" href="css/responsive.css?v=20260328a"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        /* Profile Cards Container */
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        /* Individual Profile Card */
+        .profile-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            animation: slideUp 0.5s ease-out backwards;
+        }
+
+        .profile-card:nth-child(1) { animation-delay: 0.1s; }
+        .profile-card:nth-child(2) { animation-delay: 0.2s; }
+        .profile-card:nth-child(3) { animation-delay: 0.3s; }
+        .profile-card:nth-child(4) { animation-delay: 0.4s; }
+        .profile-card:nth-child(5) { animation-delay: 0.5s; }
+        .profile-card:nth-child(n+6) { animation-delay: 0.6s; }
+
+        .profile-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            border-color: #007bff;
+        }
+
+        .profile-card.admin {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            border-color: #ffc107;
+        }
+
+        .profile-card.user {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            border-color: #17a2b8;
+        }
+
+        /* Avatar Container */
+        .avatar-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            height: 120px;
+            perspective: 900px;
+            transform-style: preserve-3d;
+            animation: avatarBob 3.2s infinite ease-in-out;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 18px 30px rgba(47, 68, 147, 0.34),
+                inset -8px -10px 18px rgba(0, 0, 0, 0.18),
+                inset 10px 10px 20px rgba(255, 255, 255, 0.26);
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(14deg) rotateY(-12deg);
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translateZ(20px) scale(1.06);
+            filter: saturate(1.08) contrast(1.03);
+            border-radius: 50%;
+        }
+
+        .avatar.male {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .avatar.female {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .avatar::before {
+            content: '';
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+            transform: translateZ(-8px);
+            animation: pulseRing3d 2.4s infinite ease-out;
+        }
+
+        .avatar::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 108%;
+            width: 78%;
+            height: 16px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(11, 18, 44, 0.4) 0%, rgba(11, 18, 44, 0) 75%);
+            transform: translateX(-50%) rotateX(74deg) translateZ(-18px);
+            pointer-events: none;
+        }
+
+        .profile-card:hover .avatar {
+            transform: rotateX(18deg) rotateY(-20deg) translateY(-4px);
+        }
+
+        .profile-card:hover .avatar img {
+            transform: translateZ(24px) scale(1.12);
+        }
+
+        /* Animations */
+        @keyframes avatarBob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulseRing3d {
+            0% {
+                transform: translateZ(-8px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateZ(-8px) scale(1.28);
+                opacity: 0;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Profile Info */
+        .profile-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+            text-transform: capitalize;
+        }
+
+        .profile-email {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 0.8rem;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Status Badge */
+        .profile-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+        }
+
+        .profile-badge.admin {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+
+        .profile-badge.user {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #17a2b8;
+        }
+
+        .profile-badge.active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #28a745;
+        }
+
+        .profile-badge.inactive {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Profile Actions */
+        .profile-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-actions button {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .profile-actions .btn-edit {
+            background: #007bff;
+            color: white;
+        }
+
+        .profile-actions .btn-edit:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .profile-actions .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .profile-actions .btn-delete:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        /* Filters */
+        .profiles-filters {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1.5rem 0.8rem 2.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profiles-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 1rem;
+            }
+
+            .avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+
+            .profile-name {
+                font-size: 1.1rem;
+            }
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <link rel="stylesheet" href="css/no-overlay.css?v=20260327c"/>
+</head>
+<body class="admin-shell-page">
+
+<nav class="navbar">
+    <div class="nav-brand">
+        <a href="home.html">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <span>HYUNDAI PREMIER</span>
+        </a>
+    </div>
+    <button class="sidebar-toggle-btn" onclick="document.body.classList.toggle('admin-shell-collapsed')">
+        <i class="fa-solid fa-angles-left"></i>
+    </button>
+    <div class="nav-links">
+        <a href="admin.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <a href="admin.html"><i class="fa-solid fa-mobile-screen"></i> Product Management</a>
+        <a href="admin.html"><i class="fa-solid fa-cart-flatbed"></i> Order Management</a>
+        <a href="admin.html"><i class="fa-solid fa-comments"></i> Reviews Management</a>
+        <a href="admin.html"><i class="fa-solid fa-boxes-stacked"></i> Inventory Management</a>
+        <a href="shop.html#/payment-history"><i class="fa-solid fa-file-invoice-dollar"></i> Payment History</a>
+        <a href="profiles.html" class="active"><i class="fa-solid fa-address-card"></i> User Profiles</a>
+        <a href="user-management.html"><i class="fa-solid fa-users-gear"></i> User Settings</a>
+        
+        <div style="flex:1"></div>
+        
+        <span id="adminGreeting" class="greeting-text"></span>
+        <a href="#" onclick="logout()" class="btn-nav btn-outline">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<div class="admin-container">
+    <h1 class="admin-title"><i class="fa-solid fa-address-card"></i> User Profiles</h1>
+
+    <!-- Search Container -->
+    <div class="search-container">
+        <i class="fa-solid fa-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by name or email..."/>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="profiles-filters">
+        <button class="filter-btn active" data-filter="all" onclick="filterProfiles('all')">
+            <i class="fa-solid fa-circle-check"></i> All
+        </button>
+        <button class="filter-btn" data-filter="admin" onclick="filterProfiles('admin')">
+            <i class="fa-solid fa-shield-halved"></i> Administrators
+        </button>
+        <button class="filter-btn" data-filter="user" onclick="filterProfiles('user')">
+            <i class="fa-solid fa-user"></i> Users
+        </button>
+        <button class="filter-btn" data-filter="active" onclick="filterProfiles('active')">
+            <i class="fa-solid fa-circle-check"></i> Active
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading profiles...</p>
+    </div>
+
+    <!-- Profiles Grid -->
+    <div class="profiles-grid" id="profilesGrid"></div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <i class="fa-solid fa-inbox"></i>
+        <h3>No profiles found</h3>
+        <p>Try adjusting your search or filters</p>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    let allUsers = [];
+    let currentFilter = 'all';
+
+    // Check if admin is logged in
+    function checkAdminAccess() {
+        const user = JSON.parse(localStorage.getItem('ms_user') || '{}');
+        if (!user.role || user.role !== 'ADMIN') {
+            window.location.href = 'admin.html';
+            return false;
+        }
+        return true;
+    }
+
+    // Load profiles on page load
+    async function loadProfiles() {
+        if (!checkAdminAccess()) return;
+
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('profilesGrid').innerHTML = '';
+
+        try {
+            const response = await fetch('/api/admin/users', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch users');
+
+            const result = await response.json();
+            // API now returns wrapped response with .data property
+            allUsers = result.data || [];
+
+            if (allUsers.length === 0) {
+                showEmptyState();
+            } else {
+                renderProfiles(allUsers);
+            }
+        } catch (error) {
+            console.error('Error loading profiles:', error);
+            showToastGlobal('Failed to load user profiles', 'error');
+            showEmptyState();
+        } finally {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+    }
+
+    // Render profile cards
+    function renderProfiles(users) {
+        const grid = document.getElementById('profilesGrid');
+        grid.innerHTML = '';
+
+        if (users.length === 0) {
+            showEmptyState();
+            return;
+        }
+
+        hideEmptyState();
+
+        users.forEach(user => {
+            const avatarUrl = getAvatarUrl(user);
+            const roleClass = user.role === 'ADMIN' ? 'admin' : 'user';
+            const statusClass = user.active !== false ? 'active' : 'inactive';
+            const statusText = user.active !== false ? 'Active' : 'Inactive';
+
+            const card = document.createElement('div');
+            card.className = `profile-card ${roleClass}`;
+            card.innerHTML = `
+                <div class="avatar-container">
+                    <div class="avatar">
+                        <img src="${avatarUrl}" alt="${escapeHtml(user.name)} avatar" loading="lazy" onerror="this.src='https://api.dicebear.com/9.x/thumbs/png?seed=fallback&size=128&backgroundType=gradientLinear'"/>
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <div class="profile-name">${escapeHtml(user.name)}</div>
+                    <div class="profile-email">${escapeHtml(user.email)}</div>
+                    <div>
+                        <span class="profile-badge ${roleClass}">
+                            ${user.role === 'ADMIN' ? '<i class="fa-solid fa-shield-halved"></i> ' : '<i class="fa-solid fa-user"></i> '}
+                            ${user.role}
+                        </span>
+                        <span class="profile-badge ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn-edit" onclick="goToEditUser(${user.id})" title="Edit user">
+                        <i class="fa-solid fa-edit"></i> Edit
+                    </button>
+                    <button class="btn-delete" onclick="deleteUserProfile(${user.id})" title="Delete user">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+    }
+
+    // Use a fixed local 3D avatar image provided in static/images.
+    function getAvatarUrl(user) {
+        return '/images/images.jpg';
+    }
+
+    // Filter profiles
+    function filterProfiles(filter) {
+        currentFilter = filter;
+
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+
+        // Filter and render
+        let filtered = allUsers;
+
+        if (filter === 'admin') {
+            filtered = allUsers.filter(u => u.role === 'ADMIN');
+        } else if (filter === 'user') {
+            filtered = allUsers.filter(u => u.role === 'USER');
+        } else if (filter === 'active') {
+            filtered = allUsers.filter(u => u.active !== false);
+        }
+
+        renderProfiles(filtered);
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase();
+
+        let filtered = allUsers.filter(user =>
+            user.name.toLowerCase().includes(query) ||
+            user.email.toLowerCase().includes(query)
+        );
+
+        // Apply current filter
+        if (currentFilter === 'admin') {
+            filtered = filtered.filter(u => u.role === 'ADMIN');
+        } else if (currentFilter === 'user') {
+            filtered = filtered.filter(u => u.role === 'USER');
+        } else if (currentFilter === 'active') {
+            filtered = filtered.filter(u => u.active !== false);
+        }
+
+        renderProfiles(filtered);
+    });
+
+    // Go to edit user page
+    function goToEditUser(userId) {
+        window.location.href = `user-management.html?editId=${userId}`;
+    }
+
+    // Delete user with confirmation
+    async function deleteUserProfile(userId) {
+        if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (!response.ok) throw new Error('Failed to delete user');
+
+            showToastGlobal('User deleted successfully', 'success');
+            loadProfiles();
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            showToastGlobal('Failed to delete user', 'error');
+        }
+    }
+
+    // Utilities
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = String(text || '');
+        return div.innerHTML;
+    }
+
+    function showEmptyState() {
+        document.getElementById('emptyState').style.display = 'block';
+        document.getElementById('profilesGrid').style.display = 'none';
+    }
+
+    function hideEmptyState() {
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('profilesGrid').style.display = 'grid';
+    }
+
+    // Update greeting on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const user = JSON.parse(localStorage.getItem('ms_user') || '{}');
+        if (user.name) {
+            document.getElementById('adminGreeting').textContent = `👋 Hello, ${user.name}`;
+        }
+        loadProfiles();
+    });
+</script>
+</body>
+</html>
+
+
+
